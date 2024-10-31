@@ -9,15 +9,43 @@ type User = {
   status: "active" | "stopped";
 };
 
+const mockUsers: User[] = [
+  {
+    id: "1",
+    email: "user1@example.com",
+    name: "Иван Петров",
+    description: "Менеджер проекта",
+    status: "active"
+  },
+  {
+    id: "2",
+    email: "user2@example.com",
+    name: "Анна Сидорова",
+    description: "Разработчик",
+    status: "stopped"
+  },
+  {
+    id: "3",
+    email: "user3@example.com",
+    name: "Петр Иванов",
+    description: "Дизайнер",
+    status: "active"
+  }
+];
+
 export function InteractionTable() {
-  const [users, setUsers] = useState<User[]>([]);
+  const [users, setUsers] = useState<User[]>(mockUsers);
 
   const handleStatusToggle = async (userId: string) => {
-    // TODO: Реализовать переключение статуса
+    setUsers(users.map(user => 
+      user.id === userId 
+        ? { ...user, status: user.status === "active" ? "stopped" : "active" }
+        : user
+    ));
   };
 
   const handleDelete = async (userId: string) => {
-    // TODO: Реализовать удаление пользователя
+    setUsers(users.filter(user => user.id !== userId));
   };
 
   return (
