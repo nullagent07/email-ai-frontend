@@ -1,15 +1,15 @@
-import { LoaderFunction } from "@remix-run/node";
-import { Outlet, Form } from "@remix-run/react";
-import { requireUserId } from "~/utils/session.server";
-import { useSessionTimeout } from "~/hooks/useSessionTimeout";
+import { Outlet, Form, useMatches } from "@remix-run/react";
+import { useGlobalContext } from '../context/GlobalContext';
 
-export const loader: LoaderFunction = async ({ request }) => {
-  await requireUserId(request);
-  return null;
-};
+interface User {
+  name: string;
+  email: string;
+  is_subscription_active: boolean;
+}
 
 export default function Dashboard() {
-  useSessionTimeout();
+  const { user } = useGlobalContext();
+  const matches = useMatches();
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -18,6 +18,7 @@ export default function Dashboard() {
           <div className="flex justify-between h-16">
             <div className="flex-shrink-0 flex items-center">
               <h1 className="text-xl font-bold">Dashboard</h1>
+              <span className="ml-4 text-gray-500">{user?.email}</span>
             </div>
             <div className="flex items-center">
               <Form action="/logout" method="post">

@@ -9,32 +9,12 @@ type User = {
   status: "active" | "stopped";
 };
 
-const mockUsers: User[] = [
-  {
-    id: "1",
-    email: "user1@example.com",
-    name: "Иван Петров",
-    description: "Менеджер проекта",
-    status: "active"
-  },
-  {
-    id: "2",
-    email: "user2@example.com",
-    name: "Анна Сидорова",
-    description: "Разработчик",
-    status: "stopped"
-  },
-  {
-    id: "3",
-    email: "user3@example.com",
-    name: "Петр Иванов",
-    description: "Дизайнер",
-    status: "active"
-  }
-];
+interface Props {
+  data: User[];
+}
 
-export function InteractionTable() {
-  const [users, setUsers] = useState<User[]>(mockUsers);
+export function InteractionTable({ data }: Props) {
+  const [users, setUsers] = useState<User[]>(data);
 
   const handleStatusToggle = async (userId: string) => {
     setUsers(users.map(user => 

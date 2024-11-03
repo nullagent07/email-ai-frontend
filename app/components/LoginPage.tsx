@@ -1,10 +1,18 @@
 import { useLoaderData } from "@remix-run/react";
+import { authApi } from "~/utils/api.server";
 
-export default function LoginPage() {
+export default function LoginPage({ authorizationUrl }: { authorizationUrl: string }) {
   const { authorization_url, error } = useLoaderData<{ authorization_url?: string; error?: string }>();
 
-  const handleGoogleLogin = () => {
-    if (authorization_url) {
+  const handleGoogleLogin = async () => {
+    if (!authorization_url) {
+      try {
+        const response = await authApi.googleLogin();
+        window.location.href = response.data.authorization_url;
+      } catch (error) {
+        console.error("Ошибка при получении URL авторизации:", error);
+      }
+    } else {
       window.location.href = authorization_url;
     }
   };
@@ -32,3 +40,19 @@ export default function LoginPage() {
     </div>
   );
 }
+
+
+// import React from 'react';
+
+// export default function LoginPage({ authorizationUrl }: { authorizationUrl: string }) {
+//   const handleLogin = () => {
+//     window.location.href = authorizationUrl;
+//   };
+
+//   return (
+//     <div>
+//       <h1>Вход</h1>
+//       <button onClick={handleLogin}>Войти через Google</button>
+//     </div>
+//   );
+// }

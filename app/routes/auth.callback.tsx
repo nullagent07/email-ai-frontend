@@ -1,17 +1,18 @@
 import { LoaderFunction, redirect } from "@remix-run/node";
-import { authApi } from "~/utils/api.server";
-import { createUserSession } from "~/utils/session.server";
+import { authApi, usersApi } from "~/utils/api.server";
 
 export const loader: LoaderFunction = async ({ request }) => {
   const url = new URL(request.url);
   const status = url.searchParams.get("status");
-  const isNewUser = url.searchParams.get("is_new_user") === "true";
-
+  
   if (status === "success") {
-    // Создаем сессию для пользователя
-    return createUserSession("temp-user-id", "/dashboard");
+    try {      
+      return redirect("/dashboard");
+    } catch (error) {
+      console.error("Ошибка при аутентификации:", error);
+    }
   }
-
+  
   return redirect("/login");
 };
 
