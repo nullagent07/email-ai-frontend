@@ -7,27 +7,6 @@ import { authApi, usersApi } from "~/utils/api.server";
 export const loader: LoaderFunction = async ({ request }) => {
    // Извлекаем заголовок Cookie из исходного запроса
    const cookieHeader = request.headers.get("Cookie");
-
-   // Парсим куки, если необходимо
-   const cookieValue = cookieHeader ? parse(cookieHeader) : null;
-   
-  //  if (cookieValue) {
-  //    const oauthToken = cookieValue.access_token;
-  //   //  console.log("Access Token:", oauthToken);
- 
-  //    // Передаем куки в запрос на бэкенд
-  //    try {
-  //      const response = await usersApi.getUser({ "Cookie": cookieHeader });
-  //      console.log(response.status);
-  //      if (response.status === 200) {
-  //        // Пользователь аутентифицирован, перенаправляем на dashboard
-  //        return redirect("/dashboard");
-  //      }
-  //    } catch (error) {
-  //      console.error("Ошибка проверки аутентификации:", error);
-  //      // Обработка ошибки или продолжение с логикой авторизации
-  //    }
-  //  }
  
    // Если пользователь не аутентифицирован, получаем URL авторизации
    try {
