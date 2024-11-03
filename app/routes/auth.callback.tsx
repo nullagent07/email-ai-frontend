@@ -1,5 +1,5 @@
 import { LoaderFunction, redirect } from "@remix-run/node";
-import { authApi, usersApi } from "~/utils/api.server";
+import { authApiServer, usersApiServer } from "~/utils/api.server";
 
 export const loader: LoaderFunction = async ({ request }) => {
   const url = new URL(request.url);

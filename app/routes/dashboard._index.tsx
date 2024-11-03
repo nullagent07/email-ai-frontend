@@ -1,7 +1,7 @@
 import { json, LoaderFunction } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { InteractionTable } from "~/components/InteractionTable";
-import { usersApi } from "~/utils/api.server";
+import { usersApiServer } from "~/utils/api.server";
 
 const mockUsers = [
   {
@@ -23,7 +23,7 @@ const mockUsers = [
 export const loader: LoaderFunction = async () => {
   return json({ users: mockUsers });
   // try {
-  //   const response = await usersApi.getAll();
+  //   const response = await usersApiServer.getAll();
   //   return json({ users: response.data });
   // } catch (error: any) {
   //   if (error.response?.status === 404) {

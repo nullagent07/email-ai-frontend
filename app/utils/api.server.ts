@@ -15,14 +15,15 @@ const apiClient = axios.create({
 });
 
 // Auth endpoints
-export const authApi = {
+export const authApiServer = {
   googleLogin: (headers = {}) => apiClient.get('/api/auth/google/login', { headers }),
   googleCallback: (code: string, state: string, headers = {}) => 
-    apiClient.get(`/api/auth/google/callback?code=${code}&state=${state}`, { headers })
+    apiClient.get(`/api/auth/google/callback?code=${code}&state=${state}`, { headers }),
+  logout: (headers = {}) => apiClient.post('/api/auth/logout', {}, { headers })
 };
 
 // Users endpoints
-export const usersApi = {
+export const usersApiServer = {
   // getAll: () => apiClient.get('/users'),
   getUser: (headers = {}) => apiClient.get('/api/user/me', { headers }),
   toggleStatus: (userId: string) => apiClient.patch(`/users/${userId}/toggle-status`),

@@ -1,21 +1,30 @@
-import { ActionFunction, redirect } from "@remix-run/node";
-import { deleteAllCookies } from "~/utils/cookieUtils";
+import { ActionFunction, redirect, json } from "@remix-run/node";
+import { authApiServer } from "~/utils/api.server";
+import { parse } from "cookie";
 
 export const action: ActionFunction = async ({ request }) => {
-    const cookiesToDelete = deleteAllCookies();
-    const headers = new Headers();
-    
-    // Проверяем, является ли cookiesToDelete массивом
-    if (Array.isArray(cookiesToDelete)) {
-        cookiesToDelete.forEach(cookie => {
-            headers.append("Set-Cookie", cookie);
-        });
-    } else {
-        // Обработка случая, если cookiesToDelete не является массивом
-        headers.append("Set-Cookie", cookiesToDelete);
-    }
+    const cookieHeader = request.headers.get("Cookie");
+    const cookieValue = cookieHeader ? parse(cookieHeader) : null;
 
-    return redirect("/login", { headers });
+    try {
+        const response = await authApiServer.logout();
+
+        if (response.status !== 200) {
+            throw new Error("Logout failed");
+        }
+
+        const setCookieHeader = response.headers['set-cookie'];
+
+        return json(
+            { message: "Logout successful" }, 
+            {
+                headers: setCookieHeader ? { "Set-Cookie": setCookieHeader.join(", ") } : {},
+            }
+        );
+    } catch (error) {
+        console.error("Ошибка при выходе:", error);
+        throw new Error("Logout failed");
+    }
 };
 
 export const loader = () => redirect("/"); 

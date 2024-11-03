@@ -2,7 +2,7 @@ import { json, LoaderFunction, redirect } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { parse } from "cookie";
 import LoginPage from "~/components/LoginPage";
-import { authApi, usersApi } from "~/utils/api.server";
+import { authApiServer, usersApiServer } from "~/utils/api.server";
 
 export const loader: LoaderFunction = async ({ request }) => {
    // Извлекаем заголовок Cookie из исходного запроса
@@ -10,7 +10,7 @@ export const loader: LoaderFunction = async ({ request }) => {
  
    // Если пользователь не аутентифицирован, получаем URL авторизации
    try {
-     const response = await authApi.googleLogin({ "Cookie": cookieHeader });
+     const response = await authApiServer.googleLogin({ "Cookie": cookieHeader });
      const authorizationUrl = response.data.authorization_url;
  
      // Установка куки в ответе, если необходимо

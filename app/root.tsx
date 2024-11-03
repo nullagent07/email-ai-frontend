@@ -1,6 +1,6 @@
 import { Links, LiveReload, Meta, Outlet, Scripts, ScrollRestoration, json, redirect, useLoaderData } from "@remix-run/react";
 import { LinksFunction, LoaderFunction } from "@remix-run/node";
-import { usersApi } from "./utils/api.server";
+import { usersApiServer } from "./utils/api.server";
 import { parse } from "cookie";
 import { deleteAllCookies } from "./utils/cookieUtils";
 import { GlobalProvider, useGlobalContext } from './context/GlobalContext';
@@ -30,7 +30,7 @@ export const loader: LoaderFunction = async ({ request }) => {
     }
     try {
       // Проверка токена, отправляя запрос на бэкенд
-      const response = await usersApi.getUser({ Cookie: cookieHeader });
+      const response = await usersApiServer.getUser({ Cookie: cookieHeader });
       
       // Если токен не валиден (401), удаляем все куки и перенаправляем на /login
       if (response.status === 401) {
