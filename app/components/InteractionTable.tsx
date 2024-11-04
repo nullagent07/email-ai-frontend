@@ -66,56 +66,52 @@ export function InteractionTable({ data }: Props) {
 
   return (
     <div className="flex flex-col h-full max-h-[80vh]">
-      <div className="flex-grow overflow-y-auto">
-        <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-          <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
-            <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Email
-                    </th>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Name
-                    </th>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Assistant Description
-                    </th>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Status
-                    </th>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {thread.map((thread) => (
-                    <tr key={thread.id}>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{thread.email}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{thread.name}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{thread.description}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm">
-                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${thread.status === "active" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}>
-                          {thread.status === "active" ? "Активен" : "Остановлен"}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <Link to="#" className="text-indigo-600 hover:text-indigo-900">История</Link>
-                        <button
-                          onClick={() => handleDelete(thread.id)}
-                          className="text-red-600 hover:text-red-900 ml-4"
-                        >
-                          Удалить
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
+      <div className="relative">
+        <div className="border border-gray-300 rounded-lg shadow-md overflow-hidden max-h-[600px] overflow-y-auto">
+          <table className="w-full">
+            <thead className="bg-gray-50 sticky top-0 z-50 after:absolute after:inset-x-0 after:top-full after:h-2 after:bg-gradient-to-b after:from-gray-50/50 after:to-transparent">
+              <tr>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Email
+                </th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Name
+                </th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Assistant Description
+                </th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Status
+                </th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {thread.map((thread) => (
+                <tr key={thread.id}>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{thread.email}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{thread.name}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{thread.description}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm">
+                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${thread.status === "active" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}>
+                      {thread.status === "active" ? "Активен" : "Остановлен"}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <Link to="#" className="text-indigo-600 hover:text-indigo-900">История</Link>
+                    <button
+                      onClick={() => handleDelete(thread.id)}
+                      className="text-red-600 hover:text-red-900 ml-4"
+                    >
+                      Удалить
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
       <div className="flex justify-end mt-4">
