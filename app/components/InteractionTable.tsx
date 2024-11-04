@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "@remix-run/react";
 
-type User = {
+type Thread = {
   id: string;
   email: string;
   name: string;
@@ -10,13 +10,13 @@ type User = {
 };
 
 interface Props {
-  data: User[];
+  data: Thread[];
 }
 
 export function InteractionTable({ data }: Props) {
-  const [users, setUsers] = useState<User[]>(data);
+  const [thread, setThreads] = useState<Thread[]>(data);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [newUser, setNewUser] = useState<User>({
+  const [newThread, setnewThread] = useState<Thread>({
     id: '',
     email: '',
     name: '',
@@ -25,38 +25,38 @@ export function InteractionTable({ data }: Props) {
   });
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
-  const handleStatusToggle = async (userId: string) => {
-    setUsers(users.map(user => 
-      user.id === userId 
-        ? { ...user, status: user.status === "active" ? "stopped" : "active" }
-        : user
+  const handleStatusToggle = async (threadId: string) => {
+    setThreads(thread.map(thread => 
+      thread.id === threadId 
+        ? { ...thread, status: thread.status === "active" ? "stopped" : "active" }
+        : thread
     ));
   };
 
-  const handleDelete = async (userId: string) => {
-    setUsers(users.filter(user => user.id !== userId));
+  const handleDelete = async (threadId: string) => {
+    setThreads(thread.filter(thread => thread.id !== threadId));
   };
 
   const validateFields = () => {
     const newErrors: { [key: string]: string } = {};
-    if (!newUser.email) newErrors.email = "Email обязателен";
-    if (!newUser.name) newErrors.name = "Имя обязательно";
-    if (!newUser.description) newErrors.description = "Описание обязательно";
+    if (!newThread.email) newErrors.email = "Email required";
+    if (!newThread.name) newErrors.name = "Name required";
+    if (!newThread.description) newErrors.description = "Assistant Description required";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleAddUser = () => {
+  const handleAddThread = () => {
     if (!validateFields()) return;
-    setUsers([...users, { ...newUser, id: String(users.length + 1) }]);
+    setThreads([...thread, { ...newThread, id: String(thread.length + 1) }]);
     setIsModalOpen(false);
-    setNewUser({ id: '', email: '', name: '', description: '', status: 'active' });
+    setnewThread({ id: '', email: '', name: '', description: '', status: 'active' });
     setErrors({});
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setNewUser({ ...newUser, [name]: value });
+    setnewThread({ ...newThread, [name]: value });
   };
 
   const handleCloseModal = () => {
@@ -65,63 +65,67 @@ export function InteractionTable({ data }: Props) {
   };
 
   return (
-    <div className="flex flex-col relative">
-      <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-        <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
-          <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Email
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Имя
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Описание
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Статус
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Действия
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {users.map((user) => (
-                  <tr key={user.id}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{user.email}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{user.name}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{user.description}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm">
-                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${user.status === "active" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}>
-                        {user.status === "active" ? "Активен" : "Остановлен"}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <Link to="#" className="text-indigo-600 hover:text-indigo-900">История</Link>
-                      <button
-                        onClick={() => handleDelete(user.id)}
-                        className="text-red-600 hover:text-red-900 ml-4"
-                      >
-                        Удалить
-                      </button>
-                    </td>
+    <div className="flex flex-col h-full max-h-[80vh]">
+      <div className="flex-grow overflow-y-auto">
+        <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+          <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
+            <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Email
+                    </th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Name
+                    </th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Assistant Description
+                    </th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Status
+                    </th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Actions
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {thread.map((thread) => (
+                    <tr key={thread.id}>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{thread.email}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{thread.name}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{thread.description}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm">
+                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${thread.status === "active" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}>
+                          {thread.status === "active" ? "Активен" : "Остановлен"}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <Link to="#" className="text-indigo-600 hover:text-indigo-900">История</Link>
+                        <button
+                          onClick={() => handleDelete(thread.id)}
+                          className="text-red-600 hover:text-red-900 ml-4"
+                        >
+                          Удалить
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
-      <button
-        onClick={() => setIsModalOpen(true)}
-        className="fixed bottom-4 right-4 px-4 py-2 bg-blue-500 text-white rounded"
-      >
-        Добавить пользователя
-      </button>
+      <div className="flex justify-end mt-4">
+        <button
+          onClick={() => setIsModalOpen(true)}
+          className="px-4 py-2 bg-blue-500 text-white rounded"
+        >
+          Добавить
+        </button>
+      </div>
       {isModalOpen && (
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center" onClick={handleCloseModal}>
           <div className="bg-white p-4 rounded relative" onClick={(e) => e.stopPropagation()}>
@@ -133,7 +137,7 @@ export function InteractionTable({ data }: Props) {
                   type="text"
                   name="email"
                   placeholder="Email"
-                  value={newUser.email}
+                  value={newThread.email}
                   onChange={handleChange}
                   className={`mb-1 p-2 border ${errors.email ? 'border-red-500' : 'border-gray-300'} rounded w-full`}
                 />
@@ -143,8 +147,8 @@ export function InteractionTable({ data }: Props) {
                 <input
                   type="text"
                   name="name"
-                  placeholder="Имя"
-                  value={newUser.name}
+                  placeholder="Name"
+                  value={newThread.name}
                   onChange={handleChange}
                   className={`mb-1 p-2 border ${errors.name ? 'border-red-500' : 'border-gray-300'} rounded w-full`}
                 />
@@ -154,25 +158,23 @@ export function InteractionTable({ data }: Props) {
                 <input
                   type="text"
                   name="description"
-                  placeholder="Описание"
-                  value={newUser.description}
+                  placeholder="Assistant Description"
+                  value={newThread.description}
                   onChange={handleChange}
                   className={`mb-1 p-2 border ${errors.description ? 'border-red-500' : 'border-gray-300'} rounded w-full`}
                 />
                 {errors.description && <p className="text-red-500 text-xs">{errors.description}</p>}
               </div>
             </div>
-            <div className="flex justify-center mt-4">
-              <button
-                onClick={handleAddUser}
-                className="px-4 py-2 bg-blue-500 text-white rounded"
-              >
-                Добавить
-              </button>
-            </div>
+            <button
+              onClick={handleAddThread}
+              className="mt-4 px-4 py-2 bg-blue-500 text-white rounded"
+            >
+              Добавить
+            </button>
           </div>
         </div>
       )}
     </div>
   );
-} 
+}

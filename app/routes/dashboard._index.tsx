@@ -17,7 +17,106 @@ const mockUsers = [
     name: "Анна Сидорова",
     description: "Разработчик",
     status: "stopped"
-  }
+  },
+  {
+    id: "1",
+    email: "user1@example.com",
+    name: "Иван Петров",
+    description: "Менеджер проекта",
+    status: "active"
+  },
+  {
+    id: "2",
+    email: "user2@example.com",
+    name: "Анна Сидорова",
+    description: "Разработчик",
+    status: "stopped"
+  },
+  {
+    id: "1",
+    email: "user1@example.com",
+    name: "Иван Петров",
+    description: "Менеджер проекта",
+    status: "active"
+  },
+  {
+    id: "2",
+    email: "user2@example.com",
+    name: "Анна Сидорова",
+    description: "Разработчик",
+    status: "stopped"
+  },
+  {
+    id: "1",
+    email: "user1@example.com",
+    name: "Иван Петров",
+    description: "Менеджер проекта",
+    status: "active"
+  },
+  {
+    id: "2",
+    email: "user2@example.com",
+    name: "Анна Сидорова",
+    description: "Разработчик",
+    status: "stopped"
+  },
+  {
+    id: "1",
+    email: "user1@example.com",
+    name: "Иван Петров",
+    description: "Менеджер проекта",
+    status: "active"
+  },
+  {
+    id: "2",
+    email: "user2@example.com",
+    name: "Анна Сидорова",
+    description: "Разработчик",
+    status: "stopped"
+  },
+  {
+    id: "1",
+    email: "user1@example.com",
+    name: "Иван Петров",
+    description: "Менеджер проекта",
+    status: "active"
+  },
+  {
+    id: "2",
+    email: "user2@example.com",
+    name: "Анна Сидорова",
+    description: "Разработчик",
+    status: "stopped"
+  },
+  {
+    id: "1",
+    email: "user1@example.com",
+    name: "Иван Петров",
+    description: "Менеджер проекта",
+    status: "active"
+  },
+  {
+    id: "2",
+    email: "user2@example.com",
+    name: "Анна Сидорова",
+    description: "Разработчик",
+    status: "stopped"
+  },
+  {
+    id: "1",
+    email: "user1@example.com",
+    name: "Иван Петров",
+    description: "Менеджер проекта",
+    status: "active"
+  },
+  {
+    id: "2",
+    email: "user2@example.com",
+    name: "Анна Сидорова",
+    description: "Разработчик",
+    status: "stopped"
+  },
+
 ];
 
 export const loader: LoaderFunction = async () => {
