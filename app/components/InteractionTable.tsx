@@ -1,5 +1,7 @@
 import { useState } from "react";
-import { Link } from "@remix-run/react";
+import { Link, useFetcher } from "@remix-run/react";
+import type { FetcherWithComponents } from "@remix-run/react";
+// import { threadsApi } from "~/utils/api.client";
 
 type Thread = {
   id: string;
@@ -14,6 +16,7 @@ interface Props {
 }
 
 export function InteractionTable({ data }: Props) {
+  const fetcher: FetcherWithComponents<any> = useFetcher();
   const [thread, setThreads] = useState<Thread[]>(data);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newThread, setnewThread] = useState<Thread>({
@@ -25,17 +28,32 @@ export function InteractionTable({ data }: Props) {
   });
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
-  const handleStatusToggle = async (threadId: string) => {
-    setThreads(thread.map(thread => 
-      thread.id === threadId 
-        ? { ...thread, status: thread.status === "active" ? "stopped" : "active" }
-        : thread
-    ));
-  };
+  // const handleStatusToggle = async (threadId: string) => {
+  //   try {
+  //     const currentThread = thread.find(t => t.id === threadId);
+  //     if (!currentThread) return;
 
-  const handleDelete = async (threadId: string) => {
-    setThreads(thread.filter(thread => thread.id !== threadId));
-  };
+  //     const newStatus = currentThread.status === 'active' ? 'stopped' : 'active';
+  //     await threadsApi.updateThreadStatus(threadId, newStatus);
+      
+  //     setThreads(thread.map(t => 
+  //       t.id === threadId 
+  //         ? { ...t, status: newStatus }
+  //         : t
+  //     ));
+  //   } catch (error) {
+  //     console.error('Ошибка при обновлении статуса:', error);
+  //   }
+  // };
+
+  // const handleDelete = async (threadId: string) => {
+  //   try {
+  //     await threadsApi.deleteThread(threadId);
+  //     setThreads(thread.filter(t => t.id !== threadId));
+  //   } catch (error) {
+  //     console.error('Ошибка при удалении потока:', error);
+  //   }
+  // };
 
   const validateFields = () => {
     const newErrors: { [key: string]: string } = {};
@@ -46,23 +64,36 @@ export function InteractionTable({ data }: Props) {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleAddThread = () => {
-    if (!validateFields()) return;
-    setThreads([...thread, { ...newThread, id: String(thread.length + 1) }]);
-    setIsModalOpen(false);
-    setnewThread({ id: '', email: '', name: '', description: '', status: 'active' });
-    setErrors({});
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setnewThread({ ...newThread, [name]: value });
+    setnewThread(prev => ({ ...prev, [name]: value }));
+    
+    if (errors[name]) {
+      setErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors[name];
+        return newErrors;
+      });
+    }
   };
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setErrors({});
   };
+
+  if (fetcher.data?.success && fetcher.state === "idle") {
+    setThreads(prev => [...prev, fetcher.data.thread]);
+    setIsModalOpen(false);
+    setnewThread({ id: '', email: '', name: '', description: '', status: 'active' });
+    setErrors({});
+    fetcher.data = null;
+  }
+
+  if (fetcher.data?.error && fetcher.state === "idle") {
+    setErrors({ submit: fetcher.data.error });
+    fetcher.data = null;
+  }
 
   return (
     <div className="flex flex-col h-full max-h-[80vh]">
@@ -102,7 +133,7 @@ export function InteractionTable({ data }: Props) {
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <Link to="#" className="text-indigo-600 hover:text-indigo-900">История</Link>
                     <button
-                      onClick={() => handleDelete(thread.id)}
+                      // onClick={() => handleDelete(thread.id)}
                       className="text-red-600 hover:text-red-900 ml-4"
                     >
                       Удалить
@@ -123,21 +154,33 @@ export function InteractionTable({ data }: Props) {
         </button>
       </div>
       {isModalOpen && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center" onClick={handleCloseModal}>
-          <div className="bg-white p-4 rounded relative" onClick={(e) => e.stopPropagation()}>
-            <button className="absolute top-2 right-2 text-gray-500" onClick={handleCloseModal}>×</button>
-            <h2 className="text-lg font-bold mb-4">Добавить нового пользователя</h2>
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center">
+          <fetcher.Form 
+            method="post"
+            action="/api/employees"
+            onSubmit={(e) => {
+              if (!validateFields()) {
+                e.preventDefault();
+                return;
+              }
+            }}
+            className="bg-white p-4 rounded relative"
+          >
+            <input type="hidden" name="intent" value="create" />
+            <h2 id="modal-title" className="text-lg font-bold mb-4">Добавить нового пользователя</h2>
             <div className="space-y-4">
               <div className="h-10">
                 <input
-                  type="text"
+                  type="email"
                   name="email"
                   placeholder="Email"
                   value={newThread.email}
                   onChange={handleChange}
                   className={`mb-1 p-2 border ${errors.email ? 'border-red-500' : 'border-gray-300'} rounded w-full`}
+                  aria-invalid={errors.email ? "true" : "false"}
+                  aria-describedby={errors.email ? "email-error" : undefined}
                 />
-                {errors.email && <p className="text-red-500 text-xs">{errors.email}</p>}
+                {errors.email && <p id="email-error" className="text-red-500 text-xs">{errors.email}</p>}
               </div>
               <div className="h-10">
                 <input
@@ -163,12 +206,13 @@ export function InteractionTable({ data }: Props) {
               </div>
             </div>
             <button
-              onClick={handleAddThread}
-              className="mt-4 px-4 py-2 bg-blue-500 text-white rounded"
+              type="submit"
+              disabled={fetcher.state !== "idle"}
+              className="mt-4 px-4 py-2 bg-blue-500 text-white rounded disabled:bg-gray-400"
             >
-              Добавить
+              {fetcher.state !== "idle" ? "Добавление..." : "Добавить"}
             </button>
-          </div>
+          </fetcher.Form>
         </div>
       )}
     </div>

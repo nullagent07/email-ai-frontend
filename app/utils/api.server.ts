@@ -30,4 +30,34 @@ export const usersApiServer = {
   delete: (userId: string) => apiClient.delete(`/users/${userId}`),
 };
 
+const emailApiServer = axios.create({
+  baseURL: process.env.API_BASE_URL,
+  withCredentials: true,
+  headers: {
+    'Content-Type': 'application/json',
+  }
+});
+
+export const threadsApiServer = {
+  createThread: (threadData: any, cookieHeader?: string | null) => 
+    apiClient.post('/api/email/gmail/threads/', threadData, {
+      headers: cookieHeader ? {
+        Cookie: cookieHeader
+      } : undefined
+    })
+}
+
+
+// Добавляем метод для создания треда с передачей кук
+// const createThread = async (threadData: any, cookieHeader?: string | null) => {
+//   console.log('cookieHeader', cookieHeader);
+//   return emailApiServer.post('/api/email/gmail/threads/', threadData, {
+//     headers: cookieHeader ? {
+//       Cookie: cookieHeader
+//     } : undefined
+//   });
+// };
+
+// export { createThread };
+
 // Можно добавлять другие группы эндпоинтов по мере необходимости 
