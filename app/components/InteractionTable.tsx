@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useFetcher } from "@remix-run/react";
 import type { FetcherWithComponents } from "@remix-run/react";
 // import { threadsApi } from "~/utils/api.client";
@@ -82,18 +82,20 @@ export function InteractionTable({ data }: Props) {
     setErrors({});
   };
 
-  if (fetcher.data?.success && fetcher.state === "idle") {
-    setThreads(prev => [...prev, fetcher.data.thread]);
-    setIsModalOpen(false);
-    setnewThread({ id: '', email: '', name: '', description: '', status: 'active' });
-    setErrors({});
-    fetcher.data = null;
-  }
+  useEffect(() => {
+    if (fetcher.data?.success && fetcher.state === "idle") {
+      setThreads(prev => [...prev, fetcher.data.thread]);
+      setIsModalOpen(false);
+      setnewThread({ id: '', email: '', name: '', description: '', status: 'active' });
+      setErrors({});
+      fetcher.data = null;
+    }
 
-  if (fetcher.data?.error && fetcher.state === "idle") {
-    setErrors({ submit: fetcher.data.error });
-    fetcher.data = null;
-  }
+    if (fetcher.data?.error && fetcher.state === "idle") {
+      setErrors({ submit: fetcher.data.error });
+      fetcher.data = null;
+    }
+  }, [fetcher.data, fetcher.state]);
 
   return (
     <div className="flex flex-col h-full max-h-[80vh]">

@@ -12,21 +12,25 @@ export async function action({ request }: ActionFunctionArgs) {
     case "create":
       try {
         const threadData = {
-          email: formData.get("email") as string,
-          name: formData.get("name") as string,
-          assistant_description: formData.get("description") as string,
+          recipient_email: formData.get("email") as string,
+          recipient_name: formData.get("name") as string,
+          assistant: formData.get("description") as string,
         };
-        
+        console.log(threadData);
         const response = await threadsApiServer.createThread(threadData, cookieHeader);
-        
+        console.log(response);
+        if (!response?.data) {
+          throw new Error('Не удалось получить данные от сервера');
+        }
+
         return json({ 
           success: true, 
           thread: {
             id: response.data.id,
-            email: threadData.email,
-            name: threadData.name,
-            description: threadData.assistant_description,
-            status: 'active'
+            email: threadData.recipient_email,
+            name: threadData.recipient_name,
+            description: threadData.assistant,
+            status: response.data.status
           }
         });
       } catch (error) {
