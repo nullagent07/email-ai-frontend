@@ -1,4 +1,4 @@
-import { Form } from "@remix-run/react";
+import { Link, Form } from "@remix-run/react";
 import { Button } from "~/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { useState } from "react";
@@ -59,10 +59,10 @@ export function Sidebar({ user }: SidebarProps) {
             )}
             asChild
           >
-            <a href="/dashboard" className="flex items-center space-x-2">
+            <Link to="/dashboard" className="flex items-center space-x-2">
               <LayoutDashboard className="h-5 w-5" />
               {!isCollapsed && <span>Dashboard</span>}
-            </a>
+            </Link>
           </Button>
 
           <Button
@@ -73,10 +73,10 @@ export function Sidebar({ user }: SidebarProps) {
             )}
             asChild
           >
-            <a href="/settings" className="flex items-center space-x-2">
+            <Link to="/settings" className="flex items-center space-x-2">
               <Settings className="h-5 w-5" />
               {!isCollapsed && <span>Settings</span>}
-            </a>
+            </Link>
           </Button>
 
           <Form action="/logout" method="post">

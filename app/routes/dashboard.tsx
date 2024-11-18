@@ -7,6 +7,8 @@ import React from 'react';
 import { EmailThread, AssistantProfile } from '../types/email';
 import { EmailThreadView } from '../components/EmailThread';
 import { AssistantProfiles } from '../components/AssistantProfiles';
+import { CreateThreadDialog } from '../components/CreateThreadDialog';
+import { PlusCircle } from 'lucide-react';
 
 export const loader: LoaderFunction = async ({ request }) => {
   const user = await requireUser(request);
@@ -114,47 +116,6 @@ export default function Dashboard() {
 
   return (
     <div className="flex h-screen bg-gray-100 dark:bg-gray-900">
-      {/* Sidebar */}
-      <div className="w-64 bg-white dark:bg-gray-800 shadow-lg">
-        <div className="p-4">
-          <div className="flex items-center space-x-4 mb-6">
-            <Avatar>
-              <AvatarImage src={`https://avatar.vercel.sh/${user.email}`} alt={user.name} />
-              <AvatarFallback>{user.name[0]}</AvatarFallback>
-            </Avatar>
-            <div>
-              <h2 className="font-semibold dark:text-white">{user.name}</h2>
-              <p className="text-sm text-gray-500 dark:text-gray-400">{user.email}</p>
-            </div>
-          </div>
-          <nav className="space-y-2">
-            <Button
-              variant="ghost"
-              className="w-full justify-start"
-              asChild
-            >
-              <a href="/dashboard">Dashboard</a>
-            </Button>
-            <Button
-              variant="ghost"
-              className="w-full justify-start"
-              asChild
-            >
-              <a href="/settings">Settings</a>
-            </Button>
-            <Form action="/logout" method="post">
-              <Button
-                variant="ghost"
-                className="w-full justify-start text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/10"
-                type="submit"
-              >
-                Logout
-              </Button>
-            </Form>
-          </nav>
-        </div>
-      </div>
-
       {/* Main Content */}
       <div className="flex-1 overflow-auto">
         <header className="bg-white dark:bg-gray-800 shadow-sm">
@@ -184,14 +145,75 @@ export default function Dashboard() {
 
             {view === 'threads' ? (
               <div className="space-y-6">
-                {threads.map((thread) => (
-                  <EmailThreadView
-                    key={thread.id}
-                    thread={thread}
-                    onReply={handleReply}
-                    onArchive={handleArchive}
+                <div className="flex justify-end mb-4">
+                  <CreateThreadDialog
+                    existingAssistants={profiles}
+                    onSubmit={async (data) => {
+                      try {
+                        const response = await fetch('/api/email/threads', {
+                          method: 'POST',
+                          headers: {
+                            'Content-Type': 'application/json',
+                          },
+                          body: JSON.stringify(data),
+                        });
+                        if (response.ok) {
+                          // Обновляем список тредов после создания
+                          fetchThreads();
+                        }
+                      } catch (error) {
+                        console.error('Error creating thread:', error);
+                      }
+                    }}
+                    trigger={
+                      <Button>
+                        <PlusCircle className="h-4 w-4 mr-2" />
+                        New Thread
+                      </Button>
+                    }
                   />
-                ))}
+                </div>
+                {threads.length === 0 ? (
+                  <div className="text-center py-12">
+                    <p className="text-lg text-gray-500">No email threads yet</p>
+                    <p className="text-sm text-gray-400 mt-1">Start by creating your first thread</p>
+                    <CreateThreadDialog
+                      existingAssistants={profiles}
+                      onSubmit={async (data) => {
+                        try {
+                          const response = await fetch('/api/email/threads', {
+                            method: 'POST',
+                            headers: {
+                              'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(data),
+                          });
+                          if (response.ok) {
+                            // Обновляем список тредов после создания
+                            fetchThreads();
+                          }
+                        } catch (error) {
+                          console.error('Error creating thread:', error);
+                        }
+                      }}
+                      trigger={
+                        <Button className="mt-4">
+                          <PlusCircle className="h-4 w-4 mr-2" />
+                          Create Your First Thread
+                        </Button>
+                      }
+                    />
+                  </div>
+                ) : (
+                  threads.map((thread) => (
+                    <EmailThreadView
+                      key={thread.id}
+                      thread={thread}
+                      onReply={handleReply}
+                      onArchive={handleArchive}
+                    />
+                  ))
+                )}
               </div>
             ) : (
               <AssistantProfiles
