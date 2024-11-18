@@ -62,18 +62,56 @@
     --accent-foreground: 210 40% 98%;
 
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 85.7% 97.3%;
+    --destructive-foreground: 210 40% 98%;
 
     --ring: 217.2 32.6% 17.5%;
   }
-}
 
-@layer base {
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  /* Dialog styles */
+  [data-radix-dialog-overlay] {
+    @apply fixed inset-0 bg-black/50 backdrop-blur-sm;
+  }
+
+  [data-radix-dialog-content] {
+    @apply fixed left-[50%] top-[50%] max-h-[85vh] w-[90vw] max-w-[600px] translate-x-[-50%] translate-y-[-50%] rounded-[var(--radius)] bg-background p-6 shadow-lg;
+  }
+
+  /* Button styles */
+  .button {
+    @apply inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50;
+  }
+
+  .button-default {
+    @apply bg-primary text-primary-foreground shadow hover:bg-primary/90;
+  }
+
+  .button-destructive {
+    @apply bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90;
+  }
+
+  .button-outline {
+    @apply border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground;
+  }
+
+  .button-secondary {
+    @apply bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80;
+  }
+
+  .button-ghost {
+    @apply hover:bg-accent hover:text-accent-foreground;
+  }
+
+  .button-link {
+    @apply text-primary underline-offset-4 hover:underline;
   }
 }
 

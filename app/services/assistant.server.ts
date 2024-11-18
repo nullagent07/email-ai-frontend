@@ -1,15 +1,30 @@
 import type { AssistantProfile } from "../types/email";
 
 export class AssistantService {
-  private profiles: AssistantProfile[] = [];
+  private profiles: AssistantProfile[] = [
+    {
+      id: "1",
+      name: "Sales Assistant",
+      description: "Helps with sales communication",
+      tone: "Professional",
+      language: "English",
+      customInstructions: "Focus on building relationships and understanding customer needs",
+    },
+    {
+      id: "2",
+      name: "Support Assistant",
+      description: "Handles customer support inquiries",
+      tone: "Friendly",
+      language: "English",
+      customInstructions: "Prioritize customer satisfaction and quick resolution",
+    },
+  ];
 
   async listProfiles(): Promise<AssistantProfile[]> {
-    // TODO: Implement actual profile listing
     return this.profiles;
   }
 
   async createProfile(profile: Omit<AssistantProfile, "id">): Promise<AssistantProfile> {
-    // TODO: Implement actual profile creation
     const newProfile = {
       ...profile,
       id: Math.random().toString(36).substring(7),
@@ -19,8 +34,7 @@ export class AssistantService {
   }
 
   async updateProfile(profile: AssistantProfile): Promise<AssistantProfile> {
-    // TODO: Implement actual profile update
-    const index = this.profiles.findIndex(p => p.id === profile.id);
+    const index = this.profiles.findIndex((p) => p.id === profile.id);
     if (index === -1) {
       throw new Error("Profile not found");
     }
@@ -29,8 +43,7 @@ export class AssistantService {
   }
 
   async deleteProfile(id: string): Promise<void> {
-    // TODO: Implement actual profile deletion
-    const index = this.profiles.findIndex(p => p.id === id);
+    const index = this.profiles.findIndex((p) => p.id === id);
     if (index === -1) {
       throw new Error("Profile not found");
     }

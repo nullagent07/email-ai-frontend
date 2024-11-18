@@ -4,6 +4,7 @@ import { usersApiServer } from "./utils/api.server";
 import { parse } from "cookie";
 import { deleteAllCookies } from "./utils/cookieUtils";
 import tailwindStylesUrl from "./tailwind.css?url";
+import { Sidebar } from "./components/Sidebar";
 import { useEffect } from "react";
 import type { User } from "./types/user";
 
@@ -22,7 +23,6 @@ export const loader: LoaderFunction = async ({ request }) => {
   const currentUrl = new URL(request.url);
 
   if (!access_token) {
-    // Если токен отсутствует, перенаправляем на /login, если не находимся на странице логина
     if (!currentUrl.pathname.includes("/login")) {
       return redirect("/login");
     }
@@ -34,23 +34,18 @@ export const loader: LoaderFunction = async ({ request }) => {
   }
   
   try {
-    // Проверка токена, отправляя запрос на бэкенд
     const response = await usersApiServer.getUser({ Cookie: cookieHeader });
     
-    // Если токен не валиден (401), удаляем все куки и перенаправляем на /login
     if (response.status === 401) {
       return redirect("/login", {
         headers: {
-          "Set-Cookie": deleteAllCookies() // Удаление всех кук
+          "Set-Cookie": deleteAllCookies()
         }
       });
     }
     
-    // Если токен валиден, возвращаем данные пользователя
     return json<RootLoaderData>({ user: response.data });
   } catch (error) {
-    // В случае ошибки запроса удаляем куки и перенаправляем на /login
-    console.error("Ошибка при проверке токена:", error);
     return redirect("/login", {
       headers: {
         "Set-Cookie": deleteAllCookies()
@@ -60,19 +55,23 @@ export const loader: LoaderFunction = async ({ request }) => {
 };
 
 export default function App() {
-  const data = useLoaderData<RootLoaderData>();
+  const { user } = useLoaderData<RootLoaderData>();
 
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <meta charSet="utf-8" />
-        <meta name="viewport" content="width=device-width,initial-scale=1" />
-        <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
         <Links />
       </head>
-      <body>
-        <Outlet context={{ user: data?.user }} />
+      <body className="min-h-screen bg-background font-sans antialiased">
+        <div className="relative flex min-h-screen">
+          {user && <Sidebar user={user} />}
+          <div className="flex-1">
+            <Outlet context={{ user }} />
+          </div>
+        </div>
         <ScrollRestoration />
         <Scripts />
         <LiveReload />
