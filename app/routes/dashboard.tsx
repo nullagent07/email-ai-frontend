@@ -1,5 +1,7 @@
-import { Outlet, Form, useMatches } from "@remix-run/react";
-import { useGlobalContext } from '../context/GlobalContext';
+import { Outlet, Form, useMatches, useOutletContext } from "@remix-run/react";
+import { Button } from "~/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
+import { LogOut, Menu } from "lucide-react";
 
 interface User {
   name: string;
@@ -7,35 +9,49 @@ interface User {
   is_subscription_active: boolean;
 }
 
+type ContextType = { user: User | null };
+
 export default function Dashboard() {
-  const { user } = useGlobalContext();
+  const { user } = useOutletContext<ContextType>();
   const matches = useMatches();
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <div className="bg-white shadow">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
-            <div className="flex-shrink-0 flex items-center">
-              <h1 className="text-xl font-bold">Dashboard</h1>
-              <span className="ml-4 text-gray-500">{user?.email}</span>
-            </div>
+    <div className="min-h-screen bg-background">
+      <header className="border-b">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex h-16 items-center justify-between">
             <div className="flex items-center">
+              <Button variant="ghost" size="icon" className="md:hidden">
+                <Menu className="h-5 w-5" />
+              </Button>
+              <h1 className="ml-4 text-xl font-semibold text-foreground">Dashboard</h1>
+            </div>
+            
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <Avatar>
+                  <AvatarImage src={`https://avatar.vercel.sh/${user?.email}`} />
+                  <AvatarFallback>{user?.name?.charAt(0)}</AvatarFallback>
+                </Avatar>
+                <div className="hidden md:block">
+                  <p className="text-sm font-medium text-foreground">{user?.name}</p>
+                  <p className="text-sm text-muted-foreground">{user?.email}</p>
+                </div>
+              </div>
+              
               <Form action="/logout" method="post">
-                <button
-                  type="submit"
-                  className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md"
-                >
-                  Выйти
-                </button>
+                <Button variant="ghost" size="icon" type="submit">
+                  <LogOut className="h-5 w-5" />
+                </Button>
               </Form>
             </div>
           </div>
         </div>
-      </div>
-      <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+      </header>
+
+      <main className="container mx-auto px-4 py-8 sm:px-6 lg:px-8">
         <Outlet />
-      </div>
+      </main>
     </div>
   );
-} 
+}
