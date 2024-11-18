@@ -1,7 +1,7 @@
 import { json, LoaderFunction } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
-import { InteractionTable } from "~/components/InteractionTable";
-import { usersApiServer } from "~/utils/api.server";
+import { InteractionTable } from "../components/InteractionTable";
+import { usersApiServer } from "../utils/api.server";
 
 const mockUsers = [
   {
@@ -136,5 +136,3 @@ export default function DashboardIndex() {
   const { users } = useLoaderData<typeof loader>();
   return <InteractionTable data={users} />;
 } 
-
-

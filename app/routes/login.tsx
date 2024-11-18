@@ -1,8 +1,8 @@
 import { json, LoaderFunction, redirect } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
-import LoginPage from "~/components/LoginPage";
-import { authApiServer } from "~/utils/api.server";
-import { getUserId } from "~/utils/session.server";
+import LoginPage from "../components/LoginPage";
+import { authApiServer } from "../utils/api.server";
+import { getUserId } from "../utils/session.server";
 
 export const loader: LoaderFunction = async ({ request }) => {
   // Проверяем, не авторизован ли уже пользователь

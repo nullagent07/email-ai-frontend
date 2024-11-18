@@ -1,8 +1,8 @@
-import { LoaderFunction, redirect } from "@remix-run/node";
-import { authApiServer } from "~/utils/api.server";
-import { createUserSession } from "~/utils/session.server";
+import { redirect } from "@remix-run/node";
+import type { LoaderFunctionArgs } from "@remix-run/node";
+import { getAuthService } from "../services/auth.server";
 
-export const loader: LoaderFunction = async ({ request }) => {
+export async function loader({ request }: LoaderFunctionArgs) {
   const url = new URL(request.url);
   const code = url.searchParams.get("code");
   const state = url.searchParams.get("state");
@@ -12,23 +12,19 @@ export const loader: LoaderFunction = async ({ request }) => {
   }
 
   try {
-    const cookieHeader = request.headers.get("Cookie");
-    const response = await authApiServer.googleCallback(
-      code,
-      state,
-      { "Cookie": cookieHeader }
-    );
-
-    const { access_token, user_id } = response.data;
-    
-    // Создаем сессию пользователя
-    return createUserSession(user_id, "/dashboard");
+    const authService = await getAuthService();
+    const token = await authService.handleCallback(code, state);
+    return redirect("/dashboard", {
+      headers: {
+        "Set-Cookie": `token=${token}; Path=/; HttpOnly`,
+      },
+    });
   } catch (error) {
-    console.error("Ошибка при обработке callback:", error);
+    console.error("Auth callback error:", error);
     return redirect("/login");
   }
-};
+}
 
 export default function Callback() {
-  return null;
+  return <div>Processing authentication...</div>;
 }

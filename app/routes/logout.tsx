@@ -1,30 +1,13 @@
-import { ActionFunction, redirect, json } from "@remix-run/node";
-import { authApiServer } from "~/utils/api.server";
-import { parse } from "cookie";
+import { redirect } from "@remix-run/node";
+import type { ActionFunctionArgs } from "@remix-run/node";
+import { getAuthService } from "../services/auth.server";
 
-export const action: ActionFunction = async ({ request }) => {
-    const cookieHeader = request.headers.get("Cookie");
-    const cookieValue = cookieHeader ? parse(cookieHeader) : null;
+export async function action({ request }: ActionFunctionArgs) {
+  const authService = await getAuthService();
+  await authService.logout();
+  return redirect("/login");
+}
 
-    try {
-        const response = await authApiServer.logout();
-
-        if (response.status !== 200) {
-            throw new Error("Logout failed");
-        }
-
-        const setCookieHeader = response.headers['set-cookie'];
-
-        return json(
-            { message: "Logout successful" }, 
-            {
-                headers: setCookieHeader ? { "Set-Cookie": setCookieHeader.join(", ") } : {},
-            }
-        );
-    } catch (error) {
-        console.error("Ошибка при выходе:", error);
-        throw new Error("Logout failed");
-    }
-};
-
-export const loader = () => redirect("/"); 
+export async function loader() {
+  return redirect("/login");
+}
