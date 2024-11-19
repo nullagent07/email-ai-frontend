@@ -71,17 +71,27 @@ export async function logout(request: Request) {
     const cookieHeader = request.headers.get("Cookie");
     
     // Вызываем API для логаута
-    await authApiServer.logout({ "Cookie": cookieHeader });
+    const response = await authApiServer.logout({ "Cookie": cookieHeader });
 
     // Уничтожаем локальную сессию
     const session = await getUserSession(request);
+
+    // Получаем куки из ответа бекенда
+    const cookies = response.headers["set-cookie"] || [];
+
+    // Объединяем куки из ответа с куки для уничтожения локальной сессии
+    const allCookies = [
+      await storage.destroySession(session),
+      ...cookies
+    ];
+
     return redirect("/login", {
       headers: {
-        "Set-Cookie": await storage.destroySession(session),
+        "Set-Cookie": allCookies.join(", ")
       },
     });
   } catch (error) {
-    // Даже если API вернул ошибку, все равно уничтожаем локальную сессию
+    // В случае ошибки все равно пытаемся уничтожить локальную сессию
     const session = await getUserSession(request);
     return redirect("/login", {
       headers: {

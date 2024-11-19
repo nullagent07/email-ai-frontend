@@ -19,7 +19,10 @@ export const authApiServer = {
   googleLogin: (headers = {}) => apiClient.get('/api/auth/google/login', { headers }),
   googleCallback: (code: string, state: string, headers = {}) => 
     apiClient.get(`/api/auth/google/callback?code=${code}&state=${state}`, { headers }),
-  logout: (headers = {}) => apiClient.post('/api/auth/logout', {}, { headers })
+  logout: (headers = {}) => apiClient.post('/api/auth/logout', {}, { 
+    headers,
+    withCredentials: true 
+  })
 };
 
 // Users endpoints

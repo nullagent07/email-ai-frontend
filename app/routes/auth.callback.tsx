@@ -13,15 +13,16 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
   try {
     const authService = await getAuthService();
+    console.log('Cookies:', document.cookie); // Временно для отладки
     const token = await authService.handleCallback(code, state);
     return redirect("/dashboard", {
       headers: {
-        "Set-Cookie": `token=${token}; Path=/; HttpOnly`,
+        "Set-Cookie": `access_token=${token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=3600`,
       },
     });
   } catch (error) {
     console.error("Auth callback error:", error);
-    return redirect("/login");
+    return redirect("/login?error=auth_failed");
   }
 }
 
