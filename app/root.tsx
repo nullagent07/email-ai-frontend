@@ -23,8 +23,41 @@ const CACHE_DURATION = 5000; // 5 секунд
 
 export const loader: LoaderFunction = async ({ request }) => {
   const currentUrl = new URL(request.url);
-  
-  // Пропускаем проверку для публичных роутов
+  const cookieHeader = request.headers.get("Cookie");
+  const cookieValue = cookieHeader ? parse(cookieHeader) : null;
+  const access_token = cookieValue ? cookieValue.access_token : null;
+
+  // Если есть access_token, проверяем его валидность
+  if (access_token) {
+    try {
+      const response = await usersApiServer.getUser({ 
+        Cookie: cookieHeader
+      });
+      
+      // Обновляем кэш
+      authCache = {
+        user: response.data,
+        timestamp: Date.now()
+      };
+      
+      return json<RootLoaderData>({ 
+        user: response.data,
+        isAuthenticated: true
+      });
+    } catch (error: any) {
+      // Если токен невалидный, очищаем его
+      if (error.response?.status === 401) {
+        return redirect("/login", {
+          headers: {
+            "Set-Cookie": deleteAllCookies()
+          }
+        });
+      }
+      throw error;
+    }
+  }
+
+  // Для публичных роутов без токена возвращаем не авторизован
   if (currentUrl.pathname === "/login" || currentUrl.pathname === "/") {
     return json<RootLoaderData>({ 
       user: null, 
@@ -32,47 +65,8 @@ export const loader: LoaderFunction = async ({ request }) => {
     });
   }
 
-  const cookieHeader = request.headers.get("Cookie");
-  const cookieValue = cookieHeader ? parse(cookieHeader) : null;
-  const access_token = cookieValue ? cookieValue.access_token : null;
-
-  if (!access_token) {
-    return redirect("/login");
-  }
-
-  // Проверяем кэш
-  if (authCache && (Date.now() - authCache.timestamp) < CACHE_DURATION) {
-    return json<RootLoaderData>({ 
-      user: authCache.user,
-      isAuthenticated: true
-    });
-  }
-  
-  try {
-    const response = await usersApiServer.getUser({ 
-      Cookie: cookieHeader
-    });
-    
-    // Обновляем кэш
-    authCache = {
-      user: response.data,
-      timestamp: Date.now()
-    };
-    
-    return json<RootLoaderData>({ 
-      user: response.data,
-      isAuthenticated: true
-    });
-  } catch (error: any) {
-    if (error.response?.status === 401) {
-      return redirect("/login", {
-        headers: {
-          "Set-Cookie": deleteAllCookies()
-        }
-      });
-    }
-    throw error;
-  }
+  // Для всех остальных роутов без токена редиректим на логин
+  return redirect("/login");
 };
 
 export default function App() {

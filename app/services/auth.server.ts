@@ -22,12 +22,12 @@ export async function handleCallback(
   code: string, 
   state: string, 
   request: Request
-): Promise<string> {
+): Promise<any> {
   try {
     const response = await authApiServer.googleCallback(code, state, {
       Cookie: request.headers.get("Cookie")
     });
-    return response.data.access_token;
+    return response;
   } catch (error) {
     console.error('Error during Google callback:', error);
     throw error;
