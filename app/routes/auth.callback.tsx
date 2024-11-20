@@ -1,6 +1,6 @@
 import { redirect } from "@remix-run/node";
 import type { LoaderFunctionArgs } from "@remix-run/node";
-import { getAuthService } from "../services/auth.server";
+import { handleCallback } from "~/services/auth.server";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const url = new URL(request.url);
@@ -12,9 +12,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   }
 
   try {
-    const authService = await getAuthService();
-    console.log('Cookies:', document.cookie); // Временно для отладки
-    const token = await authService.handleCallback(code, state);
+    const token = await handleCallback(code, state, request);
     return redirect("/dashboard", {
       headers: {
         "Set-Cookie": `access_token=${token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=3600`,

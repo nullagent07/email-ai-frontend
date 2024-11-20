@@ -25,43 +25,15 @@ export default function Settings() {
   const navigation = useNavigation();
   const isLoading = navigation.state === "loading";
 
-  const handleProfileSelect = async (profileId: string) => {
-    // Здесь можно добавить логику выбора профиля
-    console.log('Selected profile:', profileId);
-  };
-
-  const handleProfileCreate = async (profile: Omit<AssistantProfile, 'id'>) => {
-    // Здесь можно добавить логику создания профиля
-    console.log('Creating profile:', profile);
-  };
-
-  const handleProfileEdit = async (profile: AssistantProfile) => {
-    // Здесь можно добавить логику редактирования профиля
-    console.log('Editing profile:', profile);
-  };
-
   return (
-    <div className="p-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold">Settings</h1>
-        <p className="text-muted-foreground">Manage your assistant profiles and preferences</p>
-      </div>
-
-      <div className={cn("space-y-6", isLoading && "opacity-50 pointer-events-none")}>
-        <Card>
-          <CardHeader>
-            <CardTitle>Assistant Profiles</CardTitle>
-            <CardDescription>Configure your AI assistant profiles</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <AssistantProfiles 
-              profiles={assistants}
-              onProfileSelect={handleProfileSelect}
-              onProfileCreate={handleProfileCreate}
-              onProfileEdit={handleProfileEdit}
-            />
-          </CardContent>
-        </Card>
+    <div className="flex h-screen bg-gray-100 dark:bg-gray-900">
+      <div className="flex-1 overflow-auto">
+        <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+          <div className="container mx-auto p-4">
+            <h1 className="text-2xl font-bold mb-6">Settings</h1>
+            {/* Add your dashboard content here */}
+          </div>
+        </main>
       </div>
     </div>
   );

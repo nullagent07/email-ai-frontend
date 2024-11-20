@@ -1,62 +1,43 @@
 import { redirect } from "@remix-run/node";
 import { authApiServer, usersApiServer } from "~/utils/api.server";
 
-export class AuthService {
-  async login(email: string, password: string): Promise<string> {
-    // TODO: Implement actual login logic
-    return "dummy-token";
-  }
+export async function googleLogin(request: Request): Promise<Response> {
+  const response = await authApiServer.googleLogin({
+    Cookie: request.headers.get("Cookie")
+  });
+  return redirect(response.data.url);
+}
 
-  async logout(): Promise<void> {
-    try {
-      await authApiServer.logout();
-    } catch (error) {
-      console.error('Error during logout:', error);
-    }
-  }
-
-  async handleCallback(code: string, state: string): Promise<string> {
-    try {
-      const response = await authApiServer.googleCallback(code, state);
-      
-      // Получаем токен из cookie или из ответа
-      const token = response.headers['set-cookie']?.find(cookie => 
-        cookie.startsWith('access_token=')
-      )?.split(';')[0].split('=')[1];
-
-      if (!token) {
-        throw new Error('No token received from server');
-      }
-
-      return token;
-    } catch (error) {
-      console.error('Error during OAuth callback:', error);
-      throw error;
-    }
-  }
-
-  async validateToken(token: string): Promise<boolean> {
-    // TODO: Implement actual token validation
-    return true;
+export async function logout(request: Request): Promise<void> {
+  try {
+    await authApiServer.logout({
+      Cookie: request.headers.get("Cookie")
+    });
+  } catch (error) {
+    console.error('Error during logout:', error);
   }
 }
 
-let authService: AuthService | null = null;
-
-export async function getAuthService(): Promise<AuthService> {
-  if (!authService) {
-    authService = new AuthService();
+export async function handleCallback(
+  code: string, 
+  state: string, 
+  request: Request
+): Promise<string> {
+  try {
+    const response = await authApiServer.googleCallback(code, state, {
+      Cookie: request.headers.get("Cookie")
+    });
+    return response.data.access_token;
+  } catch (error) {
+    console.error('Error during Google callback:', error);
+    throw error;
   }
-  return authService;
 }
 
 export async function getUserFromAPI(request: Request) {
   try {
-    const cookieHeader = request.headers.get("Cookie");
-    const response = await usersApiServer.getUser({ 
-      Cookie: cookieHeader,
-      'Cache-Control': 'no-cache',
-      'Pragma': 'no-cache'
+    const response = await usersApiServer.getUser({
+      Cookie: request.headers.get("Cookie")
     });
     return response.data;
   } catch (error) {
@@ -67,21 +48,18 @@ export async function getUserFromAPI(request: Request) {
 export async function requireUserFromAPI(request: Request) {
   const user = await getUserFromAPI(request);
   if (!user) {
-    throw redirect("/login?t=" + new Date().getTime());
+    throw redirect("/login");
   }
   return user;
 }
 
 export async function logoutFromAPI(request: Request) {
   try {
-    const cookieHeader = request.headers.get("Cookie");
-    await authApiServer.logout({ 
-      Cookie: cookieHeader,
-      'Cache-Control': 'no-cache',
-      'Pragma': 'no-cache'
+    await authApiServer.logout({
+      Cookie: request.headers.get("Cookie")
     });
   } catch (error) {
-    console.error('Logout error:', error);
+    console.error('Error during API logout:', error);
   }
-  return redirect("/login?t=" + new Date().getTime());
+  return redirect("/login");
 }

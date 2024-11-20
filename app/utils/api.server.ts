@@ -6,7 +6,7 @@ if (!process.env.API_URL) {
   console.warn('API_URL не установлен в переменных окружения, используется значение по умолчанию');
 }
 
-const apiClient = axios.create({
+export const apiClient = axios.create({
   baseURL: API_URL,
   withCredentials: true,
   headers: {

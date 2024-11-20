@@ -2,7 +2,7 @@ import { Link, Form } from "@remix-run/react";
 import { Button } from "~/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { useState } from "react";
-import { LayoutDashboard, Settings, LogOut, ChevronLeft, ChevronRight } from "lucide-react";
+import { LayoutDashboard, Settings, LogOut, ChevronLeft, ChevronRight, Mail } from "lucide-react";
 import { cn } from "~/lib/utils";
 import type { User } from "~/types/user";
 
@@ -62,6 +62,20 @@ export function Sidebar({ user }: SidebarProps) {
             <Link to="/dashboard" className="flex items-center space-x-2">
               <LayoutDashboard className="h-5 w-5" />
               {!isCollapsed && <span>Dashboard</span>}
+            </Link>
+          </Button>
+
+          <Button
+            variant="ghost"
+            className={cn(
+              "w-full",
+              isCollapsed ? "justify-center px-2" : "justify-start"
+            )}
+            asChild
+          >
+            <Link to="/email-assistant" className="flex items-center space-x-2">
+              <Mail className="h-5 w-5" />
+              {!isCollapsed && <span>Email Assistant</span>}
             </Link>
           </Button>
 
