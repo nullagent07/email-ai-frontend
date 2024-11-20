@@ -2,7 +2,7 @@ import { json, LoaderFunction } from "@remix-run/node";
 import { Form, Outlet, useLoaderData } from "@remix-run/react";
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import { Button } from "../components/ui/button";
-import { requireUser } from "../utils/session.server";
+import { requireUserFromAPI } from "../services/auth.server";
 import React from 'react';
 import { EmailThread, AssistantProfile } from '../types/email';
 import { EmailThreadView } from '../components/EmailThread';
@@ -11,13 +11,13 @@ import { CreateThreadDialog } from '../components/CreateThreadDialog';
 import { PlusCircle } from 'lucide-react';
 
 export const loader: LoaderFunction = async ({ request }) => {
-  const user = await requireUser(request);
+  const user = await requireUserFromAPI(request);
   return json({ user });
 };
 
 export default function Dashboard() {
   const { user } = useLoaderData<typeof loader>();
-
+  
   const [threads, setThreads] = React.useState<EmailThread[]>([]);
   const [profiles, setProfiles] = React.useState<AssistantProfile[]>([]);
   const [selectedProfile, setSelectedProfile] = React.useState<string | null>(null);

@@ -1,5 +1,5 @@
 import { redirect } from "@remix-run/node";
-import { authApiServer } from "~/utils/api.server";
+import { authApiServer, usersApiServer } from "~/utils/api.server";
 
 export class AuthService {
   async login(email: string, password: string): Promise<string> {
@@ -48,4 +48,40 @@ export async function getAuthService(): Promise<AuthService> {
     authService = new AuthService();
   }
   return authService;
+}
+
+export async function getUserFromAPI(request: Request) {
+  try {
+    const cookieHeader = request.headers.get("Cookie");
+    const response = await usersApiServer.getUser({ 
+      Cookie: cookieHeader,
+      'Cache-Control': 'no-cache',
+      'Pragma': 'no-cache'
+    });
+    return response.data;
+  } catch (error) {
+    return null;
+  }
+}
+
+export async function requireUserFromAPI(request: Request) {
+  const user = await getUserFromAPI(request);
+  if (!user) {
+    throw redirect("/login?t=" + new Date().getTime());
+  }
+  return user;
+}
+
+export async function logoutFromAPI(request: Request) {
+  try {
+    const cookieHeader = request.headers.get("Cookie");
+    await authApiServer.logout({ 
+      Cookie: cookieHeader,
+      'Cache-Control': 'no-cache',
+      'Pragma': 'no-cache'
+    });
+  } catch (error) {
+    console.error('Logout error:', error);
+  }
+  return redirect("/login?t=" + new Date().getTime());
 }
