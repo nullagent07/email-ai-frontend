@@ -1,6 +1,7 @@
 import React from 'react';
 import { AssistantProfile } from '../types/email';
 import { Button } from './ui/button';
+import { PlusCircle } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
 
 interface AssistantProfilesProps {
@@ -62,6 +63,7 @@ export const AssistantProfiles: React.FC<AssistantProfilesProps> = ({
       <div className="flex justify-between items-center">
         <h2 className="text-xl font-semibold">Assistant Profiles</h2>
         <Button onClick={() => setIsCreateDialogOpen(true)}>
+        <PlusCircle className="h-4 w-4 mr-2" />
           Create New Profile
         </Button>
       </div>
@@ -89,13 +91,6 @@ export const AssistantProfiles: React.FC<AssistantProfilesProps> = ({
                 <span>{profile.language}</span>
               </div>
             </div>
-            <Button
-              className="mt-4 w-full"
-              variant="outline"
-              onClick={() => onProfileSelect(profile.id)}
-            >
-              Use This Profile
-            </Button>
           </div>
         ))}
       </div>
