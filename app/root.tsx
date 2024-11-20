@@ -14,49 +14,70 @@ export const links: LinksFunction = () => [
 
 export type RootLoaderData = {
   user: User | null;
+  isAuthenticated: boolean;
 };
 
+// Кэшируем результат проверки аутентификации
+let authCache: { user: User | null; timestamp: number } | null = null;
+const CACHE_DURATION = 5000; // 5 секунд
+
 export const loader: LoaderFunction = async ({ request }) => {
+  const currentUrl = new URL(request.url);
+  
+  // Пропускаем проверку для публичных роутов
+  if (currentUrl.pathname === "/login" || currentUrl.pathname === "/") {
+    return json<RootLoaderData>({ 
+      user: null, 
+      isAuthenticated: false 
+    });
+  }
+
   const cookieHeader = request.headers.get("Cookie");
   const cookieValue = cookieHeader ? parse(cookieHeader) : null;
   const access_token = cookieValue ? cookieValue.access_token : null;
-  const currentUrl = new URL(request.url);
 
   if (!access_token) {
-    if (!currentUrl.pathname.includes("/login")) {
-      return redirect("/login");
-    }
-    return json<RootLoaderData>({ user: null });
+    return redirect("/login");
   }
-  
-  if (currentUrl.pathname.includes("/login")) {
-    return redirect("/dashboard");
+
+  // Проверяем кэш
+  if (authCache && (Date.now() - authCache.timestamp) < CACHE_DURATION) {
+    return json<RootLoaderData>({ 
+      user: authCache.user,
+      isAuthenticated: true
+    });
   }
   
   try {
-    const response = await usersApiServer.getUser({ Cookie: cookieHeader });
+    const response = await usersApiServer.getUser({ 
+      Cookie: cookieHeader
+    });
     
-    if (response.status === 401) {
+    // Обновляем кэш
+    authCache = {
+      user: response.data,
+      timestamp: Date.now()
+    };
+    
+    return json<RootLoaderData>({ 
+      user: response.data,
+      isAuthenticated: true
+    });
+  } catch (error: any) {
+    if (error.response?.status === 401) {
       return redirect("/login", {
         headers: {
           "Set-Cookie": deleteAllCookies()
         }
       });
     }
-    
-    return json<RootLoaderData>({ user: response.data });
-  } catch (error) {
-    return redirect("/login", {
-      headers: {
-        "Set-Cookie": deleteAllCookies()
-      }
-    });
+    throw error;
   }
 };
 
 export default function App() {
-  const { user } = useLoaderData<RootLoaderData>();
-
+  const { user, isAuthenticated } = useLoaderData<RootLoaderData>();
+  
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -67,7 +88,7 @@ export default function App() {
       </head>
       <body className="min-h-screen bg-background font-sans antialiased">
         <div className="relative flex min-h-screen">
-          {user && <Sidebar user={user} />}
+          {isAuthenticated && user && <Sidebar user={user} />}
           <div className="flex-1">
             <Outlet context={{ user }} />
           </div>

@@ -36,11 +36,20 @@ export async function handleCallback(
 
 export async function getUserFromAPI(request: Request) {
   try {
-    const response = await usersApiServer.getUser({
-      Cookie: request.headers.get("Cookie")
-    });
+    // Add caching header to prevent multiple requests
+    const headers = {
+      Cookie: request.headers.get("Cookie"),
+      'Cache-Control': 'max-age=5' // Cache for 5 seconds
+    };
+    
+    const response = await usersApiServer.getUser({ headers });
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
+    if (error.response?.status === 401) {
+      // Token expired or invalid - redirect to login
+      throw redirect("/login");
+    }
+    console.error('Error getting user:', error);
     return null;
   }
 }

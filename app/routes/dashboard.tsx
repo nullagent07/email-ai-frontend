@@ -1,14 +1,11 @@
 import { json, LoaderFunction } from "@remix-run/node";
-import { Outlet, useLoaderData } from "@remix-run/react";
-import { requireUserFromAPI } from "../services/auth.server";
+import { Outlet, useOutletContext } from "@remix-run/react";
+import type { User } from "../types/user";
 
-export const loader: LoaderFunction = async ({ request }) => {
-  const user = await requireUserFromAPI(request);
-  return json({ user });
-};
+type ContextType = { user: User | null };
 
 export default function Dashboard() {
-  const { user } = useLoaderData<typeof loader>();
+  const { user } = useOutletContext<ContextType>();
   
   return (
     <div className="flex h-screen bg-gray-100 dark:bg-gray-900">

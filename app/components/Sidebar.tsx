@@ -59,7 +59,7 @@ export function Sidebar({ user }: SidebarProps) {
             )}
             asChild
           >
-            <Link to="/dashboard" className="flex items-center space-x-2">
+            <Link to="dashboard" className="flex items-center space-x-2">
               <LayoutDashboard className="h-5 w-5" />
               {!isCollapsed && <span>Dashboard</span>}
             </Link>
@@ -73,7 +73,7 @@ export function Sidebar({ user }: SidebarProps) {
             )}
             asChild
           >
-            <Link to="/email-assistant" className="flex items-center space-x-2">
+            <Link to="email-assistant" className="flex items-center space-x-2">
               <Mail className="h-5 w-5" />
               {!isCollapsed && <span>Email Assistant</span>}
             </Link>
@@ -87,7 +87,7 @@ export function Sidebar({ user }: SidebarProps) {
             )}
             asChild
           >
-            <Link to="/settings" className="flex items-center space-x-2">
+            <Link to="settings" className="flex items-center space-x-2">
               <Settings className="h-5 w-5" />
               {!isCollapsed && <span>Settings</span>}
             </Link>
