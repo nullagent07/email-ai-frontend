@@ -4,16 +4,11 @@ import { apiClient } from "~/utils/api.server";
 // API endpoints для работы с email
 export const emailApiServer = {
   listThreads: (headers = {}) => 
-    apiClient.get('/api/email/threads', { headers }),
+    apiClient.get('http://127.0.0.1:8000/email/gmail/threads', { headers }),
   getThread: (threadId: string, headers = {}) => 
-    apiClient.get(`/api/email/threads/${threadId}`, { headers }),
-  sendReply: (threadId: string, content: string, assistantProfileId: string, headers = {}) => 
-    apiClient.post(`/api/email/threads/${threadId}/reply`, 
-      { content, assistantProfileId }, 
-      { headers }
-    ),
+    apiClient.get(`http://127.0.0.1:8000/email/gmail/threads/${threadId}`, { headers }),
   createThread: (threadData: any, headers = {}) => 
-    apiClient.post('/api/email/threads', threadData, { headers })
+    apiClient.post('http://127.0.0.1:8000/email/gmail/threads', threadData, { headers })
 };
 
 export async function listThreads(request: Request): Promise<EmailThread[]> {
@@ -30,29 +25,15 @@ export async function getThread(threadId: string, request: Request): Promise<Ema
   return response.data;
 }
 
-export async function sendReply(
-  threadId: string, 
-  content: string, 
-  assistantProfileId: string, 
-  request: Request
-): Promise<EmailThread> {
-  const response = await emailApiServer.sendReply(
-    threadId, 
-    content, 
-    assistantProfileId, 
-    {
-      Cookie: request.headers.get("Cookie")
-    }
-  );
-  return response.data;
-}
-
 export async function createThread(
   threadData: any, 
   request: Request
 ): Promise<EmailThread> {
-  const response = await emailApiServer.createThread(threadData, {
-    Cookie: request.headers.get("Cookie")
-  });
+  const response = await emailApiServer.createThread(
+    threadData,
+    {
+      Cookie: request.headers.get("Cookie")
+    }
+  );
   return response.data;
 }

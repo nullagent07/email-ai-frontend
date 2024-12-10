@@ -1,14 +1,14 @@
 export interface EmailThread {
   id: string;
-  subject: string;
-  participants: string[];
-  lastMessageDate: string;
-  status: 'active' | 'archived' | 'draft';
-  aiAssistant: {
-    profile: string;
-    lastSuggestion?: string;
-  };
-  messages: EmailMessage[];
+  user_id: string;
+  creation_date: string;
+  description: string | null;
+  status: 'active' | 'closed';
+  assistant_id: string | null;
+  recipient_email: string;
+  recipient_name: string | null;
+  sender_email: string;
+  sender_name: string | null;
 }
 
 export interface EmailMessage {
@@ -32,8 +32,5 @@ export interface Attachment {
 export interface AssistantProfile {
   id: string;
   name: string;
-  description: string;
-  tone: string;
-  language: string;
-  customInstructions?: string;
+  description?: string;
 }
