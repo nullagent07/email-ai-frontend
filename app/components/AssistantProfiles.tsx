@@ -1,15 +1,30 @@
 import React from 'react';
-import { AssistantProfile } from '../types/email';
+import { AssistantProfile, CreateAssistantData } from '../types/email';
 import { Button } from './ui/button';
-import { PlusCircle } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
+import { Label } from './ui/label';
+import { Input } from './ui/input';
+import { Textarea } from './ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 
 interface AssistantProfilesProps {
   profiles: AssistantProfile[];
   onProfileSelect: (profileId: string) => void;
-  onProfileCreate: (profile: Omit<AssistantProfile, 'id'>) => void;
-  onProfileEdit: (profile: AssistantProfile) => void;
+  onProfileCreate: (profile: CreateAssistantData) => void;
+  onProfileEdit: (profileId: string, profile: CreateAssistantData) => void;
 }
+
+const AVAILABLE_CAPABILITIES = [
+  'email_communication',
+  'task_management',
+  'scheduling',
+  'document_processing'
+];
+
+const AVAILABLE_MODELS = [
+  'gpt-4',
+  'gpt-3.5-turbo'
+];
 
 export const AssistantProfiles: React.FC<AssistantProfilesProps> = ({
   profiles,
@@ -18,42 +33,42 @@ export const AssistantProfiles: React.FC<AssistantProfilesProps> = ({
   onProfileEdit,
 }) => {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = React.useState(false);
-  const [editingProfile, setEditingProfile] = React.useState<AssistantProfile | null>(null);
+  const [editingProfileId, setEditingProfileId] = React.useState<string | null>(null);
 
-  const [formData, setFormData] = React.useState({
+  const [formData, setFormData] = React.useState<CreateAssistantData>({
     name: '',
-    description: '',
-    tone: '',
-    language: '',
-    customInstructions: '',
+    instruction: '',
+    capabilities: [],
+    model: 'gpt-4',
+    description: ''
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (editingProfile) {
-      onProfileEdit({ ...editingProfile, ...formData });
+    if (editingProfileId) {
+      onProfileEdit(editingProfileId, formData);
     } else {
       onProfileCreate(formData);
     }
     setIsCreateDialogOpen(false);
-    setEditingProfile(null);
+    setEditingProfileId(null);
     setFormData({
       name: '',
-      description: '',
-      tone: '',
-      language: '',
-      customInstructions: '',
+      instruction: '',
+      capabilities: [],
+      model: 'gpt-4',
+      description: ''
     });
   };
 
   const handleEdit = (profile: AssistantProfile) => {
-    setEditingProfile(profile);
+    setEditingProfileId(profile.profile_id);
     setFormData({
-      name: profile.name,
-      description: profile.description,
-      tone: profile.tone,
-      language: profile.language,
-      customInstructions: profile.customInstructions || '',
+      name: profile.name || '',
+      instruction: profile.instruction,
+      capabilities: profile.capabilities || [],
+      model: profile.model || 'gpt-4',
+      description: profile.description || ''
     });
     setIsCreateDialogOpen(true);
   };
@@ -63,7 +78,6 @@ export const AssistantProfiles: React.FC<AssistantProfilesProps> = ({
       <div className="flex justify-between items-center">
         <h2 className="text-xl font-semibold">Assistant Profiles</h2>
         <Button onClick={() => setIsCreateDialogOpen(true)}>
-        <PlusCircle className="h-4 w-4 mr-2" />
           Create New Profile
         </Button>
       </div>
@@ -71,7 +85,7 @@ export const AssistantProfiles: React.FC<AssistantProfilesProps> = ({
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {profiles.map((profile) => (
           <div
-            key={profile.id}
+            key={profile.profile_id}
             className="p-4 border rounded-lg bg-white shadow-sm hover:shadow-md transition-shadow"
           >
             <div className="flex justify-between items-start mb-2">
@@ -82,14 +96,8 @@ export const AssistantProfiles: React.FC<AssistantProfilesProps> = ({
             </div>
             <p className="text-sm text-gray-600 mb-2">{profile.description}</p>
             <div className="text-sm">
-              <div className="flex space-x-2">
-                <span className="font-medium">Tone:</span>
-                <span>{profile.tone}</span>
-              </div>
-              <div className="flex space-x-2">
-                <span className="font-medium">Language:</span>
-                <span>{profile.language}</span>
-              </div>
+              <p className="font-medium mb-1">Instructions:</p>
+              <p className="text-gray-600">{profile.instruction}</p>
             </div>
           </div>
         ))}
@@ -99,15 +107,13 @@ export const AssistantProfiles: React.FC<AssistantProfilesProps> = ({
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              {editingProfile ? 'Edit Profile' : 'Create New Profile'}
+              {editingProfileId ? 'Edit Profile' : 'Create New Profile'}
             </DialogTitle>
           </DialogHeader>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium mb-1">Name</label>
-              <input
-                type="text"
-                className="w-full p-2 border rounded"
+              <Label>Name</Label>
+              <Input
                 value={formData.name}
                 onChange={(e) =>
                   setFormData({ ...formData, name: e.target.value })
@@ -116,70 +122,67 @@ export const AssistantProfiles: React.FC<AssistantProfilesProps> = ({
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">
-                Description
-              </label>
-              <textarea
-                className="w-full p-2 border rounded"
-                value={formData.description}
+              <Label>Instructions</Label>
+              <Textarea
+                value={formData.instruction}
+                onChange={(e) =>
+                  setFormData({ ...formData, instruction: e.target.value })
+                }
+                required
+              />
+            </div>
+            <div>
+              <Label>Description</Label>
+              <Textarea
+                value={formData.description || ''}
                 onChange={(e) =>
                   setFormData({ ...formData, description: e.target.value })
                 }
-                required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Tone</label>
-              <input
-                type="text"
-                className="w-full p-2 border rounded"
-                value={formData.tone}
-                onChange={(e) =>
-                  setFormData({ ...formData, tone: e.target.value })
+              <Label>Model</Label>
+              <Select
+                value={formData.model || 'gpt-4'}
+                onValueChange={(value: string) =>
+                  setFormData({ ...formData, model: value })
                 }
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Language</label>
-              <input
-                type="text"
-                className="w-full p-2 border rounded"
-                value={formData.language}
-                onChange={(e) =>
-                  setFormData({ ...formData, language: e.target.value })
-                }
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">
-                Custom Instructions
-              </label>
-              <textarea
-                className="w-full p-2 border rounded"
-                value={formData.customInstructions}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    customInstructions: e.target.value,
-                  })
-                }
-              />
-            </div>
-            <div className="flex justify-end space-x-2">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => {
-                  setIsCreateDialogOpen(false);
-                  setEditingProfile(null);
-                }}
               >
-                Cancel
-              </Button>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a model" />
+                </SelectTrigger>
+                <SelectContent>
+                  {AVAILABLE_MODELS.map((model) => (
+                    <SelectItem key={model} value={model}>
+                      {model}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>Capabilities</Label>
+              <div className="space-y-2">
+                {AVAILABLE_CAPABILITIES.map((capability) => (
+                  <label key={capability} className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      checked={formData.capabilities.includes(capability)}
+                      onChange={(e) => {
+                        const newCapabilities = e.target.checked
+                          ? [...formData.capabilities, capability]
+                          : formData.capabilities.filter((c) => c !== capability);
+                        setFormData({ ...formData, capabilities: newCapabilities });
+                      }}
+                    />
+                    <span>{capability}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+            <div className="flex justify-end">
               <Button type="submit">
-                {editingProfile ? 'Save Changes' : 'Create Profile'}
+                {editingProfileId ? 'Save Changes' : 'Create Profile'}
               </Button>
             </div>
           </form>

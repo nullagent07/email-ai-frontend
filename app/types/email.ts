@@ -30,7 +30,18 @@ export interface Attachment {
 }
 
 export interface AssistantProfile {
-  id: string;
+  profile_id: string;
+  instruction: string;
   name: string;
+  description?: string;
+  model?: string;
+  capabilities?: string[];
+}
+
+export interface CreateAssistantData {
+  name: string;
+  instruction: string;
+  capabilities: string[];
+  model?: string;
   description?: string;
 }
