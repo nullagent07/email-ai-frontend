@@ -84,22 +84,7 @@ export function EmailAssistantContent() {
   return (
     <div className="container mx-auto p-4">
       <div className="mb-6 flex justify-between items-center">
-        <h1 className="text-2xl font-bold">Email Assistant</h1>
-        <div className="space-x-2">
-          <Button
-            variant="default"
-            onClick={() => handleProfileCreate({
-              name: '',
-              instruction: '',
-              capabilities: [],
-              model: 'gpt-4',
-              description: ''
-            })}
-          >
-            <PlusCircle className="h-4 w-4 mr-2" />
-            New Profile
-          </Button>
-        </div>
+        <h1 className="text-2xl text-center font-bold">Email Assistant</h1>
       </div>
 
       <AssistantProfiles

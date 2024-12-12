@@ -6,6 +6,7 @@ import { Label } from './ui/label';
 import { Input } from './ui/input';
 import { Textarea } from './ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import { PlusCircle } from 'lucide-react';
 
 interface AssistantProfilesProps {
   profiles: AssistantProfile[];
@@ -78,6 +79,7 @@ export const AssistantProfiles: React.FC<AssistantProfilesProps> = ({
       <div className="flex justify-between items-center">
         <h2 className="text-xl font-semibold">Assistant Profiles</h2>
         <Button onClick={() => setIsCreateDialogOpen(true)}>
+        <PlusCircle className="h-4 w-4 mr-2" />
           Create New Profile
         </Button>
       </div>
