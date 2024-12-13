@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { AssistantProfile, CreateAssistantData } from '../types/email';
 import { AssistantProfiles } from './AssistantProfiles';
-import { Button } from './ui/button';
-import { PlusCircle } from 'lucide-react';
+import { EmailThreads } from './EmailThreads';
 
 export function EmailAssistantContent() {
   const [profiles, setProfiles] = useState<AssistantProfile[]>([]);
   const [selectedProfile, setSelectedProfile] = useState<string | null>(null);
+  const [view, setView] = useState<'profiles' | 'threads'>('profiles');
 
   useEffect(() => {
     console.log('Component mounted, fetching profiles...');
@@ -52,7 +52,6 @@ export function EmailAssistantContent() {
       }
       const newProfile = await response.json();
       console.log('Created profile:', newProfile);
-      // Обновляем список профилей, запрашивая свежие данные
       await fetchProfiles();
     } catch (error) {
       console.error('Error creating profile:', error);
@@ -81,18 +80,33 @@ export function EmailAssistantContent() {
     }
   };
 
+  const handleProfileSelect = (profileId: string) => {
+    setSelectedProfile(profileId);
+    setView('threads');
+  };
+
+  const handleBackToProfiles = () => {
+    setView('profiles');
+    setSelectedProfile(null);
+  };
+
   return (
     <div className="container mx-auto p-4">
-      <div className="mb-6 flex justify-between items-center">
-        <h1 className="text-2xl text-center font-bold">Email Assistant</h1>
-      </div>
-
-      <AssistantProfiles
-        profiles={profiles}
-        onProfileSelect={setSelectedProfile}
-        onProfileCreate={handleProfileCreate}
-        onProfileEdit={handleProfileEdit}
-      />
+      {view === 'profiles' ? (
+        <AssistantProfiles
+          profiles={profiles}
+          onProfileSelect={handleProfileSelect}
+          onProfileCreate={handleProfileCreate}
+          onProfileEdit={handleProfileEdit}
+        />
+      ) : (
+        selectedProfile && (
+          <EmailThreads
+            selectedAssistantId={selectedProfile}
+            onBack={handleBackToProfiles}
+          />
+        )
+      )}
     </div>
   );
 }

@@ -2,8 +2,8 @@ export interface EmailThread {
   id: string;
   user_id: string;
   creation_date: string;
-  description: string | null;
-  status: 'active' | 'closed';
+  instructions: string;
+  status: 'active' | 'stopped';
   assistant_id: string | null;
   recipient_email: string;
   recipient_name: string | null;
@@ -44,4 +44,19 @@ export interface CreateAssistantData {
   capabilities: string[];
   model?: string;
   description?: string;
+}
+
+export interface CreateThreadData {
+  recipient_email: string;
+  recipient_name?: string;
+  instructions: string;
+  status: 'active' | 'stopped';
+}
+
+export interface EmailThreadResponse {
+  id: string;
+  user_email: string;
+  recipient_email: string;
+  recipient_name?: string;
+  assistant_profile_id: string;
 }
