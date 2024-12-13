@@ -8,9 +8,10 @@ import { Mail, ArrowLeft } from 'lucide-react';
 interface EmailThreadsProps {
   onBack: () => void;
   selectedAssistantId: string;
+  assistantName: string;
 }
 
-export function EmailThreads({ onBack, selectedAssistantId }: EmailThreadsProps) {
+export function EmailThreads({ onBack, selectedAssistantId, assistantName }: EmailThreadsProps) {
   const [threads, setThreads] = useState<EmailThread[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -103,14 +104,18 @@ export function EmailThreads({ onBack, selectedAssistantId }: EmailThreadsProps)
   };
 
   return (
-    <div className="space-y-4">
-      <div className="flex justify-between items-center mb-6">
-        <div className="flex items-center space-x-4">
-          <Button variant="ghost" size="icon" onClick={onBack}>
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-          <h2 className="text-2xl font-bold">Email Threads</h2>
+    <div className="space-y-6">
+      <div className="flex items-center space-x-4">
+        <Button variant="ghost" size="icon" onClick={onBack}>
+          <ArrowLeft className="h-5 w-5" />
+        </Button>
+        <div>
+          <h1 className="text-2xl font-bold">Assistant: "{assistantName}"</h1>
         </div>
+      </div>
+
+      <div className="flex justify-between items-center">
+        <h2 className="text-xl font-semibold">Email Threads</h2>
         <CreateThreadDialog
           onSubmit={handleCreateThread}
           trigger={

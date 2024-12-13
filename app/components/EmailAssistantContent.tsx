@@ -2,11 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { AssistantProfile, CreateAssistantData } from '../types/email';
 import { AssistantProfiles } from './AssistantProfiles';
 import { EmailThreads } from './EmailThreads';
+import { useNavigate, useLocation } from '@remix-run/react';
 
 export function EmailAssistantContent() {
   const [profiles, setProfiles] = useState<AssistantProfile[]>([]);
-  const [selectedProfile, setSelectedProfile] = useState<string | null>(null);
-  const [view, setView] = useState<'profiles' | 'threads'>('profiles');
+  const navigate = useNavigate();
+  const location = useLocation();
+  
+  // Parse the current URL to get the view and assistantId
+  const searchParams = new URLSearchParams(location.search);
+  const currentView = searchParams.get('view') || 'profiles';
+  const selectedAssistantId = searchParams.get('assistant');
 
   useEffect(() => {
     console.log('Component mounted, fetching profiles...');
@@ -81,31 +87,41 @@ export function EmailAssistantContent() {
   };
 
   const handleProfileSelect = (profileId: string) => {
-    setSelectedProfile(profileId);
-    setView('threads');
+    // Update URL with the new view and selected assistant
+    const params = new URLSearchParams();
+    params.set('view', 'threads');
+    params.set('assistant', profileId);
+    navigate(`?${params.toString()}`);
   };
 
   const handleBackToProfiles = () => {
-    setView('profiles');
-    setSelectedProfile(null);
+    // Clear URL parameters when going back to profiles
+    navigate('');
   };
 
   return (
     <div className="container mx-auto p-4">
-      {view === 'profiles' ? (
+      {currentView === 'profiles' ? (
         <AssistantProfiles
           profiles={profiles}
           onProfileSelect={handleProfileSelect}
           onProfileCreate={handleProfileCreate}
           onProfileEdit={handleProfileEdit}
         />
+      ) : selectedAssistantId ? (
+        <EmailThreads
+          selectedAssistantId={selectedAssistantId}
+          assistantName={profiles.find(p => p.profile_id === selectedAssistantId)?.name || 'Assistant'}
+          onBack={handleBackToProfiles}
+        />
       ) : (
-        selectedProfile && (
-          <EmailThreads
-            selectedAssistantId={selectedProfile}
-            onBack={handleBackToProfiles}
-          />
-        )
+        // Fallback to profiles view if no assistant is selected
+        <AssistantProfiles
+          profiles={profiles}
+          onProfileSelect={handleProfileSelect}
+          onProfileCreate={handleProfileCreate}
+          onProfileEdit={handleProfileEdit}
+        />
       )}
     </div>
   );
