@@ -1,146 +1,146 @@
 # Email AI Frontend
 
-Данное приложение представляет фронтенд для работы с Email AI – платформой, которая позволяет пользователю автономно общаться с выбранными почтовыми ящиками от своего имени. В основе платформы лежит LLM (Large Language Model), которому через интуитивно понятный интерфейс можно создавать и настраивать уникальную личность с помощью кастомных инструкций. Помимо этого, приложение включает авторизацию через Google, отображение информации о подписке, работу с таблицей взаимодействий и историю переписки.
+This application represents the frontend for Email AI - a platform that allows users to autonomously communicate with selected mailboxes on their behalf. The platform is based on an LLM (Large Language Model), which can be given a unique personality through custom instructions via an intuitive interface. Additionally, the application includes Google authorization, subscription information display, interaction table management, and correspondence history.
 
 ---
 
-## Содержание
+## Contents
 
-1. [Авторизация и доступ к аккаунту](#авторизация-и-доступ-к-аккаунту)
-2. [Основной экран: Таблица взаимодействий](#основной-экран-таблица-взаимодействий)
-3. [История переписки](#история-переписки)
-4. [Навигация и маршруты](#навигация-и-маршруты)
-5. [Технологический стек](#технологический-стек)
-6. [API-взаимодействие](#api-взаимодействие)
+1. [Authorization and Account Access](#authorization-and-account-access)
+2. [Main Screen: Interaction Table](#main-screen-interaction-table)
+3. [Correspondence History](#correspondence-history)
+4. [Navigation and Routes](#navigation-and-routes)
+5. [Technology Stack](#technology-stack)
+6. [API Interaction](#api-interaction)
 7. [Backend API Endpoints](#backend-api-endpoints)
-8. [Запуск приложения](#запуск-приложения)
+8. [Running the Application](#running-the-application)
 
 ---
 
-## Авторизация и доступ к аккаунту
+## Authorization and Account Access
 
-### Функциональные возможности
+### Functional Capabilities
 
-- **SSO авторизация через Gmail**
-  - На главной странице отображается кнопка для входа через Google.
-  - Авторизация реализована с использованием бэкенда.
+- **SSO Authorization through Gmail**
+  - The main page displays a button for Google login.
+  - Authorization is implemented using the backend.
   
-- **Проверка подписки**
-  - После успешной авторизации пользователю отображается текущий статус подписки, который загружается с бэкенда.
+- **Subscription Verification**
+  - After successful authorization, the user is shown their current subscription status, which is loaded from the backend.
 
 ---
 
-## Основной экран: Таблица взаимодействий
+## Main Screen: Interaction Table
 
-### Структура таблицы
+### Table Structure
 
-В таблице взаимодействий отображаются следующие поля:
+The interaction table displays the following fields:
 
-- **Email пользователя**
-- **Name** – имя пользователя.
-- **Description** – краткое описание ассистента.
-- **Статус** – кнопка для переключения между состояниями (Stop/Active).
-- **Удаление** – кнопка для удаления пользователя.
+- **User Email**
+- **Name** – the user's name.
+- **Description** – a brief description of the assistant.
+- **Status** – a button to toggle between states (Stop/Active).
+- **Delete** – a button to delete the user.
 
-### API-взаимодействие
+### API Interaction
 
-- **Получение списка пользователей.**
-- **Управление статусом взаимодействия.**
-- **Удаление пользователя** (при этом история переписки сохраняется).
-
----
-
-## История переписки
-
-### Функционал
-
-- Просмотр хронологии сообщений.
-- Возврат к основной таблице взаимодействий.
-
-### API-взаимодействие
-
-- Загрузка истории переписки происходит при открытии соответствующего маршрута.
+- **Retrieving the user list.**
+- **Managing interaction status.**
+- **Deleting a user** (correspondence history is preserved).
 
 ---
 
-## Навигация и маршруты
+## Correspondence History
 
-Приложение включает маршруты для авторизации, просмотра таблицы взаимодействий и истории переписки, реализованные с использованием Remix.run роутинга.
+### Functionality
+
+- Viewing message chronology.
+- Returning to the main interaction table.
+
+### API Interaction
+
+- Correspondence history is loaded when the corresponding route is opened.
 
 ---
 
-## Технологический стек
+## Navigation and Routes
 
-### Основные технологии
+The application includes routes for authorization, viewing the interaction table, and correspondence history, implemented using Remix.run routing.
+
+---
+
+## Technology Stack
+
+### Core Technologies
 
 - **Remix.run**
-  - Современный фреймворк для React-приложений.
-  - Преимущества:
-    - Улучшенное SEO.
-    - Быстрая загрузка страниц.
-    - Удобная серверная обработка данных с использованием loaders и actions.
+  - A modern framework for React applications.
+  - Advantages:
+    - Improved SEO.
+    - Fast page loading.
+    - Convenient server-side data processing using loaders and actions.
 
 - **React**
-  - Библиотека для создания UI-компонентов.
-  - Базовая платформа для приложения, построенного на Remix.run.
+  - A library for creating UI components.
+  - The basic platform for the application built on Remix.run.
 
 - **TypeScript**
-  - Типизированный вариант JavaScript.
-  - Преимущества:
-    - Повышенная надёжность кода.
-    - Улучшенная поддерживаемость.
-    - Удобство разработки.
+  - A typed version of JavaScript.
+  - Advantages:
+    - Increased code reliability.
+    - Improved maintainability.
+    - Development convenience.
 
-### Стилизация
+### Styling
 
 - **Tailwind CSS**
-  - Утилитарный CSS-фреймворк.
-  - Гибкая система классов и поддержка адаптивного дизайна.
+  - A utility CSS framework.
+  - Flexible class system and responsive design support.
 
 ---
 
-## API-взаимодействие
+## API Interaction
 
-### Основные операции API
+### Main API Operations
 
-- Авторизация пользователей.
-- Получение данных о пользователях.
-- Управление статусами взаимодействий.
-- Работа с историей переписки.
+- User authorization.
+- Retrieving user data.
+- Managing interaction statuses.
+- Working with correspondence history.
 
-### Пример запроса для проверки авторизации
+### Example Request for Authorization Check
 
 ```http
 GET /api/auth/check
 ```
 
-- **Назначение:** Проверка статуса авторизации и получение информации о подписке.
+- **Purpose:** Checking authorization status and retrieving subscription information.
 
 ---
 
 ## Backend API Endpoints
 
-### Аутентификация (/auth)
+### Authentication (/auth)
 
 #### 1. **GET /auth/google/login**
 
-- **Назначение:** Генерация URL для авторизации через Google OAuth.
-- **Возвращает:**  
+- **Purpose:** Generating a URL for Google OAuth authorization.
+- **Returns:**  
   ```json
   {
       "authorization_url": "string"
   }
   ```
-  *(URL для редиректа на страницу авторизации Google)*  
-- **Примечание:** Устанавливает cookie `oauth_state` для безопасности.
+  *(URL for redirect to Google authorization page)*  
+- **Note:** Sets an `oauth_state` cookie for security.
 
 #### 2. **GET /auth/google/callback**
 
-- **Назначение:** Обработка callback от Google после успешной авторизации.
-- **Принимает:**  
-  - `code`: string – код авторизации от Google.
-  - `state`: string – токен безопасности.
-- **Возвращает:**  
+- **Purpose:** Processing callback from Google after successful authorization.
+- **Accepts:**  
+  - `code`: string – authorization code from Google.
+  - `state`: string – security token.
+- **Returns:**  
   ```json
   {
       "status": "success",
@@ -148,15 +148,15 @@ GET /api/auth/check
       "is_new_user": boolean
   }
   ```
-- **Примечание:** Устанавливает cookie `access_token` с JWT токеном.
+- **Note:** Sets an `access_token` cookie with a JWT token.
 
 #### 3. **POST /auth/set-password**
 
-- **Назначение:** Добавление пароля к аккаунту, зарегистрированному через OAuth.
-- **Принимает:**  
+- **Purpose:** Adding a password to an account registered through OAuth.
+- **Accepts:**  
   - `password`: string
-- **Требует:** JWT аутентификацию.
-- **Возвращает:**  
+- **Requires:** JWT authentication.
+- **Returns:**  
   ```json
   {
       "status": "success", 
@@ -166,9 +166,9 @@ GET /api/auth/check
 
 #### 4. **GET /auth/check**
 
-- **Назначение:** Проверка валидности текущей сессии и статуса Google токенов.
-- **Требует:** JWT аутентификацию.
-- **Возвращает:**  
+- **Purpose:** Verifying the validity of the current session and Google token status.
+- **Requires:** JWT authentication.
+- **Returns:**  
   ```json
   {
       "authenticated": true,
@@ -186,31 +186,31 @@ GET /api/auth/check
 
 ---
 
-### Ассистенты (/assistants)
+### Assistants (/assistants)
 
 #### **POST /assistants/email/gmail**
 
-- **Назначение:** Проверка валидности Gmail токена.
-- **Принимает:**  
-  - `token`: string – Gmail access token в заголовке Authorization.
-- **Возвращает:**  
+- **Purpose:** Verifying the validity of a Gmail token.
+- **Accepts:**  
+  - `token`: string – Gmail access token in the Authorization header.
+- **Returns:**  
   ```json
   {
       "status": "success",
-      "message": "Gmail токен валиден"
+      "message": "Gmail token is valid"
   }
   ```
-- **Ошибки:**
-  - 401 – невалидный токен.
-  - 500 – внутренняя ошибка сервера.
+- **Errors:**
+  - 401 – invalid token.
+  - 500 – internal server error.
 
 ---
 
-## Запуск приложения
+## Running the Application
 
-Для локального запуска проекта используйте команду:
+To run the project locally, use the command:
 ```bash
 remix dev
 ```
 
-Это запустит сервер разработки, позволяющий тестировать и отлаживать приложение в режиме реального времени.
+This will start a development server, allowing you to test and debug the application in real-time.
