@@ -103,6 +103,25 @@ export function EmailThreads({ onBack, selectedAssistantId, assistantName }: Ema
     }
   };
 
+  const handleStartThread = async (threadId: string) => {
+    try {
+      setError(null);
+      const response = await fetch(`http://localhost:8000/api/email-threads/status/${selectedAssistantId}/${threadId}`, {
+        method: 'POST',
+        credentials: 'include',
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to start thread');
+      }
+      
+      await fetchThreads();
+    } catch (error) {
+      console.error('Error starting thread:', error);
+      setError('Failed to start thread. Please try again.');
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center space-x-4">
@@ -110,12 +129,14 @@ export function EmailThreads({ onBack, selectedAssistantId, assistantName }: Ema
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <div>
-          <h1 className="text-2xl font-bold">Assistant: "{assistantName}"</h1>
+          <h1 className="text-2xl font-display font-bold tracking-tight">
+            Assistant: "<span className="text-blue-600">{assistantName}</span>"
+          </h1>
         </div>
       </div>
 
       <div className="flex justify-between items-center">
-        <h2 className="text-xl font-semibold">Email Threads</h2>
+        <h2 className="text-xl font-display font-semibold tracking-tight text-gray-900">Email Threads</h2>
         <CreateThreadDialog
           onSubmit={handleCreateThread}
           trigger={
@@ -143,6 +164,7 @@ export function EmailThreads({ onBack, selectedAssistantId, assistantName }: Ema
               thread={thread}
               onArchive={handleArchive}
               onStatusChange={handleStatusChange}
+              onStart={handleStartThread}
             />
           ))}
           {threads.length === 0 && (

@@ -8,7 +8,7 @@ export function EmailAssistantContent() {
   const [profiles, setProfiles] = useState<AssistantProfile[]>([]);
   const navigate = useNavigate();
   const location = useLocation();
-  
+
   // Parse the current URL to get the view and assistantId
   const searchParams = new URLSearchParams(location.search);
   const currentView = searchParams.get('view') || 'profiles';
